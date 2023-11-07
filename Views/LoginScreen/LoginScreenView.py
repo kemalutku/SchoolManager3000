@@ -3,9 +3,9 @@ import Views
 
 
 class LoginScreenView(tk.Frame):
+    frame_name = "LoginScreenView"
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
-        self.frame_name = "LoginScreenView"
 
         application_name_label = tk.Label(self, text="Okul Yönetim Sistemi \n 3000")
         application_name_label.pack()
