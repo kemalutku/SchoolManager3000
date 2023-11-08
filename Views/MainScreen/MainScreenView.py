@@ -15,7 +15,7 @@ class MainScreenView(tk.Frame):
                                   command=lambda: cont.show_frame(Views.LoginScreenView))
         logout_button.config(bg="red")
         logout_button.pack(side="right")
-        logout_frame.pack(side="top", fill="x")
+        logout_frame.pack(side="top", fill="x", padx=10, pady=10)
 
         buttons_frame = tk.Frame(self)
         buttons_frame.grid_rowconfigure(0, weight=1)
@@ -32,11 +32,11 @@ class MainScreenView(tk.Frame):
         course_button = tk.Button(buttons_frame, text="Ders Yönetimi",
                                   command=lambda: self.open_management_view(Views.ACTIVITY))
         accounting_button = tk.Button(buttons_frame, text="Muhasebe",
-                                      command=lambda: cont.show_frame(None))
-        stock_button = tk.Button(buttons_frame, text="Stok Takibi",
-                                 command=lambda: cont.show_frame(None))
+                                      command=lambda: cont.show_frame(Views.AccountingHomeView))
+        stock_button = tk.Button(buttons_frame, text="Envanter Takibi",
+                                 command=lambda: cont.show_frame(Views.InventoryView))
         contact_button = tk.Button(buttons_frame, text="İletişim",
-                                   command=lambda: cont.show_frame(None))
+                                   command=lambda: cont.show_frame(Views.CommuncationView))
 
         student_button.grid(row=0, column=0, sticky="nsew", padx=[10, 100], pady=20)
         employee_button.grid(row=1, column=0, sticky="nsew", padx=[10, 100], pady=20)
