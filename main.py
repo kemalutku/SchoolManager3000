@@ -34,7 +34,7 @@ class SchoolManager3000(tk.Tk):
         container.grid_columnconfigure(0, weight=1)
 
         self.frames = {}
-        for F in [LoginScreenView, MainScreenView, SummaryView]:
+        for F in [LoginScreenView, MainScreenView, SummaryView, AddEntityView, SyllabusView]:
             frame = F(container, self)
             self.frames[F] = frame
             # Grid configuration ensures frames are stacked on top of each other
@@ -51,9 +51,6 @@ class SchoolManager3000(tk.Tk):
         return self.frames.get(f)
 
 
-app = SchoolManager3000()
-app.mainloop()
-
-
-
-
+if __name__ == "__main__":
+    app = SchoolManager3000()
+    app.mainloop()

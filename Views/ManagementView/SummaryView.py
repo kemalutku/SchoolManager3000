@@ -2,16 +2,13 @@ import tkinter as tk
 from tkinter import ttk
 import Views
 
-STUDENT = "student_view"
-EMPLOYEE = "employee_view"
-ACTIVITY = "activity"
-
 
 class SummaryView(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.mode = None
         self.title = tk.StringVar(value="")
+        self.cont = controller
 
         title_frame = tk.Frame(self)
         back_button = tk.Button(title_frame, text="←", command=lambda: controller.show_frame(Views.MainScreenView))
@@ -27,8 +24,10 @@ class SummaryView(tk.Frame):
         self.tree_view.grid(row=0, column=0, sticky="nsew")
 
         button_frame = tk.Frame(summary_frame)
-        self.add_new_button = tk.Button(button_frame, text="Ekle", height=5)
-        syllabus_button = tk.Button(button_frame, text="Ders Programını\nGöster", height=5)
+        self.add_new_button = tk.Button(button_frame, text="Ekle", height=5,
+                                        command=lambda: self.open_mode_view(Views.AddEntityView))
+        syllabus_button = tk.Button(button_frame, text="Ders Programını\nGöster", height=5,
+                                    command=lambda: self.open_mode_view(Views.SyllabusView))
         add_relation_button = tk.Button(button_frame, text="Ders Ekle / Sil", height=5)
         show_details_button = tk.Button(button_frame, text="Bilgileri Göster", height=5)
 
@@ -41,8 +40,13 @@ class SummaryView(tk.Frame):
 
         summary_frame.pack(side="top", expand=True, fill="both", padx=10, pady=10)
 
+    def open_mode_view(self, view):
+        management_view = self.cont.get_frame(view)
+        management_view.set_mode(self.mode)
+        self.cont.show_frame(view)
+
     def set_mode(self, mode):
-        if mode == STUDENT:
+        if mode == Views.STUDENT:
             self.title.set("Öğrenciler")
             self.tree_view['columns'] = ('okul_num', 'ad', 'soyad', 'yas', 'veli_ad', 'veli_soyad')
 
@@ -63,7 +67,7 @@ class SummaryView(tk.Frame):
 
             self.add_new_button.config(text="Öğrenci Ekle")
 
-        elif mode == EMPLOYEE:
+        elif mode == Views.EMPLOYEE:
             self.title.set("Çalışanlar")
             self.tree_view['columns'] = ('okul_num', 'ad', 'soyad', 'yas', 'e-mail', 'maas')
 
@@ -84,7 +88,7 @@ class SummaryView(tk.Frame):
 
             self.add_new_button.config(text="Çalışan Ekle")
 
-        elif mode == ACTIVITY:
+        elif mode == Views.ACTIVITY:
             self.title.set("Dersler")
             self.tree_view['columns'] = ('ders_num', 'ad', 'gun', 'b_saati', 'type')
 
