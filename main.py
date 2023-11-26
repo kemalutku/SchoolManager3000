@@ -15,7 +15,7 @@ class SchoolManager3000(tk.Tk):
         self.resizable(False, False)
 
         try:
-            if config.database_use_online:
+            if not config.use_mockup_database:
                 self.school_db = mysql.connector.connect(
                     host=config.database_ip,
                     user=config.database_user,
@@ -38,7 +38,7 @@ class SchoolManager3000(tk.Tk):
                   SummaryView, AddEntityView, SyllabusView, AddRemoveRelationView, EntityDetailsView,
                   InventoryView, ModifyInventoryView, AddInventoryView,
                   AccountingHomeView, ReportView,
-                  CommuncationView
+                  CommunicationView
                   ]:
             frame = F(container, self)
             self.frames[F] = frame

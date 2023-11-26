@@ -10,7 +10,7 @@ from Views.InventoryView.AddInventoryView import AddInventoryView
 from Views.InventoryView.ModifyInventoryView import ModifyInventoryView
 from Views.AccountingView.AccountingView import AccountingHomeView
 from Views.AccountingView.ReportView import ReportView
-from Views.CommunicationView.CommunicationView import CommuncationView
+from Views.CommunicationView.CommunicationView import CommunicationView
 
 STUDENT = "student_view"
 EMPLOYEE = "employee_view"

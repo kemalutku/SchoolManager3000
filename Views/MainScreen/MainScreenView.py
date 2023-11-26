@@ -36,7 +36,7 @@ class MainScreenView(tk.Frame):
         stock_button = tk.Button(buttons_frame, text="Envanter Takibi",
                                  command=lambda: cont.show_frame(Views.InventoryView))
         contact_button = tk.Button(buttons_frame, text="İletişim",
-                                   command=lambda: cont.show_frame(Views.CommuncationView))
+                                   command=lambda: cont.show_frame(Views.CommunicationView))
 
         student_button.grid(row=0, column=0, sticky="nsew", padx=[10, 100], pady=20)
         employee_button.grid(row=1, column=0, sticky="nsew", padx=[10, 100], pady=20)

@@ -27,9 +27,11 @@ class SummaryView(tk.Frame):
         self.add_new_button = tk.Button(button_frame, text="Ekle", height=5,
                                         command=lambda: self.open_mode_view(Views.AddEntityView, self.mode))
         syllabus_button = tk.Button(button_frame, text="Ders Programını\nGöster", height=5,
-                                    command=lambda: self.open_mode_view(Views.SyllabusView))
-        add_relation_button = tk.Button(button_frame, text="Ders Ekle / Sil", height=5)
-        show_details_button = tk.Button(button_frame, text="Bilgileri Göster", height=5)
+                                    command=lambda: self.open_mode_view(Views.SyllabusView, self.mode))
+        add_relation_button = tk.Button(button_frame, text="Ders Ekle / Sil", height=5,
+                                        command=lambda: self.open_mode_view(Views.AddRemoveRelationView, self.mode))
+        show_details_button = tk.Button(button_frame, text="Bilgileri Göster", height=5,
+                                        command=lambda: self.open_mode_view(Views.EntityDetailsView, self.mode))
 
         self.add_new_button.pack(side="top", fill="x", pady=20, padx=10)
         syllabus_button.pack(side="top", fill="x", pady=20, padx=10)
@@ -37,6 +39,7 @@ class SummaryView(tk.Frame):
         show_details_button.pack(side="top", fill="x", pady=20, padx=10)
 
         button_frame.grid(row=0, column=1)
+
 
         summary_frame.pack(side="top", expand=True, fill="both", padx=10, pady=10)
 
@@ -46,7 +49,7 @@ class SummaryView(tk.Frame):
         self.cont.show_frame(view)
 
     def set_mode(self, mode):
-        self.mode=mode
+        self.mode = mode
         if mode == Views.STUDENT:
             self.title.set("Öğrenciler")
             self.tree_view['columns'] = ('okul_num', 'ad', 'soyad', 'yas', 'veli_ad', 'veli_soyad')

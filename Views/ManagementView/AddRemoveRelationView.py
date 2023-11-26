@@ -6,7 +6,7 @@ class AddRemoveRelationView(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.mode = None
-        self.title = tk.StringVar(value="")
+        self.title = tk.StringVar(value="Ders Ekle/Sil")
         self.cont = controller
 
         title_frame = tk.Frame(self)

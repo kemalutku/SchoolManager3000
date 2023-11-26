@@ -2,8 +2,10 @@ import tkinter as tk
 import Views
 from tkinter import PhotoImage
 
+
 class LoginScreenView(tk.Frame):
     frame_name = "LoginScreenView"
+
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         # image = PhotoImage(file=r"Views/LoginScreen/TOBB_Logo.png")
