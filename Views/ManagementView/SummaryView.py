@@ -29,14 +29,14 @@ class SummaryView(tk.Frame):
                                         command=lambda: self.open_mode_view(Views.AddEntityView, self.mode, False))
         syllabus_button = tk.Button(button_frame, text="Ders Programını\nGöster", height=5,
                                     command=lambda: self.open_mode_view(Views.SyllabusView, self.mode, True))
-        add_relation_button = tk.Button(button_frame, text="Ders Ekle / Sil", height=5,
+        self.add_relation_button = tk.Button(button_frame, text="Ders Ekle / Sil", height=5,
                                         command=lambda: self.open_mode_view(Views.AddRemoveRelationView, self.mode, True))
         show_details_button = tk.Button(button_frame, text="Bilgileri Göster", height=5,
                                         command=lambda: self.open_mode_view(Views.EntityDetailsView, self.mode, False))
 
         self.add_new_button.pack(side="top", fill="x", pady=20, padx=10)
         syllabus_button.pack(side="top", fill="x", pady=20, padx=10)
-        add_relation_button.pack(side="top", fill="x", pady=20, padx=10)
+        self.add_relation_button.pack(side="top", fill="x", pady=20, padx=10)
         show_details_button.pack(side="top", fill="x", pady=20, padx=10)
 
         button_frame.grid(row=0, column=1)
@@ -45,15 +45,16 @@ class SummaryView(tk.Frame):
 
     def open_mode_view(self, view, mode, requires_entity):
         if requires_entity:
-            selected_item = self.tree_view.selection()[0]
-            item_data = self.tree_view.item(selected_item)
-            entity_id = item_data['values'][0]
+            if self.tree_view.selection():
+                selected_item = self.tree_view.selection()[0]
+                item_data = self.tree_view.item(selected_item)
+                entity_id = item_data['values'][0]
 
-            management_view = self.cont.get_frame(view)
-            management_view.entry_data = entity_id
+                management_view = self.cont.get_frame(view)
+                management_view.entry_data = entity_id
 
-            management_view.set_mode(mode)
-            self.cont.show_frame(view)
+                management_view.set_mode(mode)
+                self.cont.show_frame(view)
         else:
             management_view = self.cont.get_frame(view)
             management_view.set_mode(mode)
@@ -120,7 +121,7 @@ class SummaryView(tk.Frame):
             self.tree_view.heading("b_saati", text="Başlangıç Saati", anchor=tk.W)
             self.tree_view.heading("type", text="Tür", anchor=tk.W)
 
-            self.add_new_button.config(text="Çalışan Ekle")
+            self.add_new_button.config(text="Ders Ekle")
 
         self.populate_tree_view()
 
