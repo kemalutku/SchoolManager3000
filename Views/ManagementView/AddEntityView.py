@@ -20,6 +20,8 @@ class AddEntityView(tk.Frame):
         self.entity_details_frame = tk.Frame(self)
         self.entity_details_frame.pack(side="top", fill="both", expand=True, padx=20, pady=30)
 
+        self.entries = []
+
     def set_mode(self, mode):
         self.mode = mode
         if mode == Views.STUDENT:
@@ -34,6 +36,9 @@ class AddEntityView(tk.Frame):
 
             guardian_variable = tk.BooleanVar(value=True)
 
+            max_student_number_query = "SELECT MAX(ID) FROM student"
+            result = self.cont.sql_query(max_student_number_query)
+
             self.title.set("Öğrenci Ekle")
             okul_no_label = tk.Label(self.entity_details_frame, text="Okul Numarası")
             name_label = tk.Label(self.entity_details_frame, text="Ad")
@@ -45,8 +50,8 @@ class AddEntityView(tk.Frame):
             guardian_surname = tk.Label(self.entity_details_frame, text="Veli Soyadı")
             guardian_contact = tk.Label(self.entity_details_frame, text="Veli İletişim")
 
-            okul_no_entry = tk.Entry(self.entity_details_frame)
-            okul_no_entry.insert(0, "0")
+            okul_no_entry = tk.Label(self.entity_details_frame, text=str(result[0][0]+1))
+            okul_no_entry['state']='disabled'
             name_entry = tk.Entry(self.entity_details_frame)
             surname_entry = tk.Entry(self.entity_details_frame)
             birth_date_calendar = Calendar(self.entity_details_frame)
@@ -57,6 +62,16 @@ class AddEntityView(tk.Frame):
             guardian_contact_entry = tk.Entry(self.entity_details_frame)  # TODO: Add Mobile phone verification
             add_student_button = tk.Button(self.entity_details_frame, text="Öğrenci Ekle",
                                            command=self.add_entity_action)
+
+            self.entries.append(okul_no_entry)
+            self.entries.append(name_entry)
+            self.entries.append(surname_entry)
+            self.entries.append(birth_date_calendar)
+            self.entries.append(e_mail_entry)
+            self.entries.append(guardian_cb)
+            self.entries.append(guardian_name_entry)
+            self.entries.append(guardian_surname_entry)
+            self.entries.append(guardian_contact_entry)
 
             okul_no_label.grid(row=0, column=0, sticky="nsew", pady=3, padx=3)
             name_label.grid(row=1, column=0, sticky="nsew", pady=3, padx=3)
@@ -131,9 +146,11 @@ class AddEntityView(tk.Frame):
             pass
 
     def add_entity_action(self):
-        # TODO: Do the sql commands to add the entity here
-        # TODO: Add popup warning if checkbox failed
-        self.open_management_view()
+        if self.mode == Views.STUDENT:
+            insert_query = ""
+            student_id = self.entries[0].cget('text')
+            student_name = self.entries[1].get()
+            student_surname = self.entries[2].get()
 
     def open_management_view(self):
         management_view = self.cont.get_frame(Views.SummaryView)
