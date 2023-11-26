@@ -42,6 +42,7 @@ class CommunicationView(tk.Frame):
         filter_frame.grid(row=0, column=0, padx=5, sticky="nsew")
 
         self.tree_view = ttk.Treeview(contacts_frame)
+        self.configure_tree_view()
         self.tree_view.grid(row=0, column=1, sticky="nsew")
 
         action_frame = tk.Frame(contacts_frame)
@@ -116,3 +117,24 @@ class CommunicationView(tk.Frame):
 
     def filter_command(self):
         pass
+
+    def configure_tree_view(self):
+        self.title.set("Öğrenciler")
+        self.tree_view['columns'] = ('secim', 'okul_num', 'ad', 'soyad', 'yas', 'telefon', 'e-posta')
+
+        self.tree_view.column('#0', width=0, stretch=tk.NO)
+        self.tree_view.column("secim", width=25)
+        self.tree_view.column("okul_num", width=150)
+        self.tree_view.column("ad", width=150)
+        self.tree_view.column("soyad", width=150)
+        self.tree_view.column("yas", width=150)
+        self.tree_view.column("telefon", width=150)
+        self.tree_view.column("e-posta", width=150)
+
+        self.tree_view.heading("secim", text=" ")
+        self.tree_view.heading("okul_num", text="Okul Numarası")
+        self.tree_view.heading("ad", text="Ad")
+        self.tree_view.heading("soyad", text="Soyad")
+        self.tree_view.heading("yas", text="Yaş")
+        self.tree_view.heading("telefon", text="Telefon")
+        self.tree_view.heading("e-posta", text="E-Posta")
