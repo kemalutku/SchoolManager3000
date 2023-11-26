@@ -57,27 +57,51 @@ class SyllabusView(tk.Frame):
         self.get_data()
 
     def set_data(self, values):
-        for hour, day in values:
-            day_value = WEEK_MAPPING[day]
-            hour_value = int(str(hour)[:2]) - 9
-            target_box = 12 * day_value + hour_value
-            target_label = self.labels[target_box]
-            target_label.configure(bg="blue")
+        for label in self.labels:
+            label.configure(bg='systemWindowBackgroundColor')
+            label.config(text="")
+
+        for name, hour, day in values:
+            if name is not None:
+                day_value = WEEK_MAPPING[day]
+                hour_value = int(str(hour)[:2]) - 8
+                target_box = 12 * day_value + hour_value
+                target_label = self.labels[target_box]
+                target_label.config(text=name)
+                target_label.configure(bg="lightblue")
 
     def get_data(self):
         if self.mode == Views.STUDENT:
-            pass
+            QUERY = (
+                '(SELECT '
+                'c.COURSE_NAME, '
+                'sh.START_HOUR , '
+                'sh.DAY_OF_WEEK FROM student s '
+                'LEFT OUTER JOIN  student_section ss ON s.ID = ss.STUDENT_ID '
+                'LEFT OUTER JOIN course_section cs ON cs.ID = ss.SECTION_ID '
+                'LEFT OUTER JOIN course c ON c.ID = cs.COURSE_ID '
+                'LEFT OUTER JOIN section_hours sh ON cs.ID = sh.SEC_ID '
+                'WHERE s.ID = "{}")'
+                'UNION'
+                '( SELECT '
+                'sa.ACTIVITY_NAME, '
+                'sa.START_HOUR, '
+                'sa.DAY_OF_WEEK '
+                'FROM student s '
+                'LEFT JOIN student_activities sa ON sa.STUDENT_ID = s.ID '
+                'WHERE s.ID = "{}" )').format(
+                self.entry_data, self.entry_data)
         elif self.mode == Views.EMPLOYEE:
             pass
         elif self.mode == Views.ACTIVITY:
-            QUERY = ("SELECT sh.start_hour, sh.day_of_week "
+            QUERY = ("SELECT c.course_name, sh.start_hour, sh.day_of_week "
                      "FROM course c "
                      "LEFT JOIN course_section cs ON c.id = cs.course_id "
                      "LEFT JOIN section_hours sh ON sh.sec_id = cs.id "
                      "WHERE c.id={}").format(self.entry_data)
-            result = self.cont.sql_query(QUERY)
-            if result:
-                self.set_data(result)
+        result = self.cont.sql_query(QUERY)
+        if result:
+            self.set_data(result)
 
     def open_management_view(self):
         management_view = self.cont.get_frame(Views.SummaryView)
