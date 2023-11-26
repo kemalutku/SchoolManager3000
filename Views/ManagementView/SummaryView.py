@@ -63,7 +63,7 @@ class SummaryView(tk.Frame):
         self.mode = mode
         if mode == Views.STUDENT:
             self.title.set("Öğrenciler")
-            self.tree_view['columns'] = ('okul_num', 'ad', 'soyad', 'yas', 'veli_ad', 'veli_soyad')
+            self.tree_view['columns'] = ('okul_num', 'ad', 'soyad', 'yas', 'veli_ad', 'veli_soyad', 'aktif')
 
             self.tree_view.column('#0', width=0, stretch=tk.NO)
             self.tree_view.column("okul_num", width=150)
@@ -72,6 +72,7 @@ class SummaryView(tk.Frame):
             self.tree_view.column("yas", width=150)
             self.tree_view.column("veli_ad", width=150)
             self.tree_view.column("veli_soyad", width=150)
+            self.tree_view.column("aktif", width=150)
 
             self.tree_view.heading("okul_num", text="Okul Numarası")
             self.tree_view.heading("ad", text="Ad")
@@ -79,6 +80,7 @@ class SummaryView(tk.Frame):
             self.tree_view.heading("yas", text="Yaş")
             self.tree_view.heading("veli_ad", text="Veli Adı")
             self.tree_view.heading("veli_soyad", text="Veli Soyadı")
+            self.tree_view.heading("aktif", text="Aktif Öğrenci")
 
             self.add_new_button.config(text="Öğrenci Ekle")
 
@@ -129,8 +131,13 @@ class SummaryView(tk.Frame):
             self.tree_view.delete(item)
 
         if self.mode == Views.STUDENT:
-            students_query = "SELECT ID, FIRST_NAME, LAST_NAME, DATE_OF_BIRTH FROM student"
+            students_query = "SELECT s.ID, s.FIRST_NAME, s.LAST_NAME, TIMESTAMPDIFF(YEAR," \
+                             " s.DATE_OF_BIRTH, CURDATE())," \
+                             " COALESCE(g.FIRST_NAME, ' '), COALESCE(g.LAST_NAME, ' '), s.IS_ACTIVE" \
+                             " FROM student s" \
+                             " LEFT JOIN guardian g on g.STUDENT_ID = s.ID"
             students_list = self.cont.sql_query(students_query)
+            print(students_list)
 
             for student in students_list:
                 self.tree_view.insert('', 'end', values=student)
