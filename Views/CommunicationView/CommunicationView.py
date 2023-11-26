@@ -39,7 +39,7 @@ class CommunicationView(tk.Frame):
         filter_button = tk.Button(filter_frame, text="Filtrele", command=self.filter_command)
         filter_button.grid(row=5, column=0, columnspan=4, sticky="s")
         filter_frame.rowconfigure(5, weight=1)
-        filter_frame.grid(row=0, column=0, padx=5, sticky="nsew")
+        filter_frame.grid(row=0, column=0, padx=5, sticky="nsew", pady= [20,0])
 
         self.tree_view = ttk.Treeview(contacts_frame)
         self.configure_tree_view()
