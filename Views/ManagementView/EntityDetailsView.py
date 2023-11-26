@@ -8,6 +8,7 @@ class EntityDetailsView(tk.Frame):
         self.mode = None
         self.title = tk.StringVar(value="")
         self.cont = controller
+        self.entry_data = None
 
         title_frame = tk.Frame(self)
         back_button = tk.Button(title_frame, text="←", command=lambda: self.open_management_view())
@@ -26,6 +27,9 @@ class EntityDetailsView(tk.Frame):
 
         self.entity_details_frame.columnconfigure(0, weight=1)
         self.entity_details_frame.columnconfigure(1, weight=1)
+
+        self.courses_frame.columnconfigure(0, weight=1)
+        self.courses_frame.columnconfigure(1, weight=1)
 
     def set_mode(self, mode):
         self.mode = mode
@@ -71,6 +75,12 @@ class EntityDetailsView(tk.Frame):
             guardian_surname_value.grid(row=7, column=1, sticky="nsew", pady=3, padx=3)
             guardian_contact_value.grid(row=8, column=1, sticky="nsew", pady=3, padx=3)
 
+            tk.Label(self.courses_frame, text="Ders Geçmişi").grid(row=0, column=0, columnspan=2)
+
+            tk.Label(self.courses_frame, text="Aktif Dersler").grid(row=1, column=0, padx=10, pady=10)
+            tk.Label(self.courses_frame, text="Alınmış Dersler").grid(row=1, column=1, padx=10, pady=10)
+
+
         elif mode == Views.EMPLOYEE:
             pass
         elif mode == Views.ACTIVITY:
@@ -78,21 +88,21 @@ class EntityDetailsView(tk.Frame):
 
     def get_entity_data(self):
         # TODO: Send and parse the sql commands to get the entity details here
-        default_entity = None
         if self.mode == Views.STUDENT:
-            default_entity = {
-                'okul_no': 0,
-                'ad': 'Aylin',
-                'soyad': 'Kaya',
-                'dogum_tarihi': '01-01-2000',
-                'yaş': 23,
-                'e-mail': 'aylin.kaya@somewhere.edu.tr',
-                'veli': 'Var',
-                'veli_ad': 'Emirhan',
-                'veli_soyad': 'Kaya',
-                'veli_numara': '+905001234567'
+            query = "SELECT ID, FIRST_NAME, LAST_NAME, DATE_OF_BIRTH FROM student WHERE ID ={}".format(self.entry_data)
+            result = self.cont.sql_query(query)[0]
+            entitiy = {
+                'okul_no': result[0],
+                'ad': result[1],
+                'soyad': result[2],
+                'dogum_tarihi': result[3],
+                'e-mail': "",
+                'veli': "",
+                'veli_ad': "",
+                'veli_soyad': "",
+                'veli_numara': "",
             }
-        return default_entity
+            return entitiy
 
     def open_management_view(self):
         management_view = self.cont.get_frame(Views.SummaryView)

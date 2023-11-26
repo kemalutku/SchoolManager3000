@@ -26,8 +26,9 @@ class SchoolManager3000(tk.Tk):
         except mysql.connector.errors.DatabaseError:
             print("Connecting to online host failed. Switching to local host")
             self.school_db = FakeDB()
-        self.cursor = self.school_db.cursor()
 
+        self.cursor = self.school_db.cursor()
+        self.cursor.execute("use Bil071")
         container = tk.Frame(self)
         container.pack(side="top", fill="both", expand=True)
         container.grid_rowconfigure(0, weight=1)
@@ -55,6 +56,10 @@ class SchoolManager3000(tk.Tk):
     def get_frame(self, f):
         return self.frames.get(f)
 
+    def sql_query(self, q):
+        self.cursor.execute(q)
+        result = self.cursor.fetchall()
+        return result
 
 if __name__ == "__main__":
     app = SchoolManager3000()

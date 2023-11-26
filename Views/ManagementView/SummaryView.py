@@ -21,17 +21,18 @@ class SummaryView(tk.Frame):
         summary_frame.columnconfigure(0, weight=1)
         summary_frame.rowconfigure(0, weight=1)
         self.tree_view = ttk.Treeview(summary_frame)
+        self.tree_view.configure(selectmode="browse")
         self.tree_view.grid(row=0, column=0, sticky="nsew")
 
         button_frame = tk.Frame(summary_frame)
         self.add_new_button = tk.Button(button_frame, text="Ekle", height=5,
-                                        command=lambda: self.open_mode_view(Views.AddEntityView, self.mode))
+                                        command=lambda: self.open_mode_view(Views.AddEntityView, self.mode, False))
         syllabus_button = tk.Button(button_frame, text="Ders Programını\nGöster", height=5,
-                                    command=lambda: self.open_mode_view(Views.SyllabusView, self.mode))
+                                    command=lambda: self.open_mode_view(Views.SyllabusView, self.mode, True))
         add_relation_button = tk.Button(button_frame, text="Ders Ekle / Sil", height=5,
-                                        command=lambda: self.open_mode_view(Views.AddRemoveRelationView, self.mode))
+                                        command=lambda: self.open_mode_view(Views.AddRemoveRelationView, self.mode, True))
         show_details_button = tk.Button(button_frame, text="Bilgileri Göster", height=5,
-                                        command=lambda: self.open_mode_view(Views.EntityDetailsView, self.mode))
+                                        command=lambda: self.open_mode_view(Views.EntityDetailsView, self.mode, False))
 
         self.add_new_button.pack(side="top", fill="x", pady=20, padx=10)
         syllabus_button.pack(side="top", fill="x", pady=20, padx=10)
@@ -40,13 +41,23 @@ class SummaryView(tk.Frame):
 
         button_frame.grid(row=0, column=1)
 
-
         summary_frame.pack(side="top", expand=True, fill="both", padx=10, pady=10)
 
-    def open_mode_view(self, view, mode):
-        management_view = self.cont.get_frame(view)
-        management_view.set_mode(mode)
-        self.cont.show_frame(view)
+    def open_mode_view(self, view, mode, requires_entity):
+        if requires_entity:
+            selected_item = self.tree_view.selection()[0]
+            item_data = self.tree_view.item(selected_item)
+            entity_id = item_data['values'][0]
+
+            management_view = self.cont.get_frame(view)
+            management_view.entry_data = entity_id
+
+            management_view.set_mode(mode)
+            self.cont.show_frame(view)
+        else:
+            management_view = self.cont.get_frame(view)
+            management_view.set_mode(mode)
+            self.cont.show_frame(view)
 
     def set_mode(self, mode):
         self.mode = mode
@@ -110,3 +121,28 @@ class SummaryView(tk.Frame):
             self.tree_view.heading("type", text="Tür", anchor=tk.W)
 
             self.add_new_button.config(text="Çalışan Ekle")
+
+        self.populate_tree_view()
+
+    def populate_tree_view(self):
+        for item in self.tree_view.get_children():
+            self.tree_view.delete(item)
+
+        if self.mode == Views.STUDENT:
+            students_query = "SELECT ID, FIRST_NAME, LAST_NAME, DATE_OF_BIRTH FROM student"
+            students_list = self.cont.sql_query(students_query)
+
+            for student in students_list:
+                self.tree_view.insert('', 'end', values=student)
+        elif self.mode == Views.EMPLOYEE:
+            employee_query = "SELECT ID, FIRST_NAME, LAST_NAME, DATE_OF_BIRTH FROM employee"
+            employee_list = self.cont.sql_query(employee_query)
+
+            for employee in employee_list:
+                self.tree_view.insert('', 'end', values=employee)
+        elif self.mode == Views.ACTIVITY:
+            activity_query = "SELECT ID, COURSE_NAME FROM course"
+            employee_list = self.cont.sql_query(activity_query)
+
+            for employee in employee_list:
+                self.tree_view.insert('', 'end', values=employee)
