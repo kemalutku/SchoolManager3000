@@ -11,7 +11,7 @@ class ModifyInventoryView(tk.Frame):
         self.cont = controller
 
         title_frame = tk.Frame(self)
-        back_button = tk.Button(title_frame, text="←", command=lambda: controller.show_frame(Views.MainScreenView))
+        back_button = tk.Button(title_frame, text="←", command=lambda: controller.show_frame(Views.InventoryView))
         title_label = tk.Label(title_frame, textvariable=self.title)
         back_button.pack(side="left")
         title_label.pack(side="left", fill="x")
