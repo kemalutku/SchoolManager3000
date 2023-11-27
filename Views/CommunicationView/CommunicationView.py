@@ -39,7 +39,7 @@ class CommunicationView(tk.Frame):
         filter_button = tk.Button(filter_frame, text="Filtrele", command=self.filter_command)
         filter_button.grid(row=5, column=0, columnspan=4, sticky="s")
         filter_frame.rowconfigure(5, weight=1)
-        filter_frame.grid(row=0, column=0, padx=5, sticky="nsew", pady= [20,0])
+        filter_frame.grid(row=0, column=0, padx=5, sticky="nsew", pady=[20, 0])
 
         self.tree_view = ttk.Treeview(contacts_frame)
         self.configure_tree_view()
@@ -76,8 +76,8 @@ class CommunicationView(tk.Frame):
 
         popup.geometry(f"+{x_center}+{y_center}")
 
-        tk.Label(popup, text="SMS İçeriği:").pack(pady=20,side="top")
-        tk.Entry(popup).pack(fill="both", side="top", padx=10,expand=True)
+        tk.Label(popup, text="SMS İçeriği:").pack(pady=20, side="top")
+        tk.Entry(popup).pack(fill="both", side="top", padx=10, expand=True)
         tk.Label(popup, text="Yukarıdaki SMS'i göndermek için GÖNDER'e tıklayın.").pack(pady=20)
         button_frame = tk.Frame(popup)
         button_frame.pack(pady=20, side="top")
@@ -138,3 +138,27 @@ class CommunicationView(tk.Frame):
         self.tree_view.heading("yas", text="Yaş")
         self.tree_view.heading("telefon", text="Telefon")
         self.tree_view.heading("e-posta", text="E-Posta")
+
+        self.populate_tree_view()
+
+    def populate_tree_view(self):
+        for item in self.tree_view.get_children():
+            self.tree_view.delete(item)
+
+        communication_query = "SELECT s.ID, g.FIRST_NAME, g.LAST_NAME, TIMESTAMPDIFF(YEAR," \
+                              " s.DATE_OF_BIRTH, CURDATE()), g.CONTACT" \
+                              " FROM student s" \
+                              " JOIN guardian g on g.STUDENT_ID = s.ID"
+        communication_list = self.cont.sql_query(communication_query)
+
+        for guardian in communication_list:
+            # Insert data into the tree view, specifying column values explicitly
+            # Include a checkbox in the first column
+            item_id = self.tree_view.insert('', 'end', values=(
+                " ",  # Placeholder for checkbox
+                guardian[0],
+                guardian[1],
+                guardian[2],
+                guardian[3],
+                guardian[4]
+            ))
