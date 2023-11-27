@@ -152,34 +152,13 @@ class CommunicationView(tk.Frame):
         communication_list = self.cont.sql_query(communication_query)
 
         for guardian in communication_list:
-            # Create a BooleanVar for each row
-            checkbox_state = tk.BooleanVar(value=False)
-
             # Insert data into the tree view, specifying column values explicitly
             # Include a checkbox in the first column
-            self.tree_view.insert('', 'end', values=(
-                "",  # Placeholder for checkbox
+            item_id = self.tree_view.insert('', 'end', values=(
+                " ",  # Placeholder for checkbox
                 guardian[0],
                 guardian[1],
                 guardian[2],
                 guardian[3],
                 guardian[4]
-            ), tags=(checkbox_state,))
-
-            # Configure the appearance of the checkbox based on its state
-            self.tree_view.tag_configure(checkbox_state, background='white', foreground='black')
-
-            # Bind the callback function to the checkbox
-            self.tree_view.tag_bind(checkbox_state, '<ButtonRelease-1>', self.checkbox_callback)
-
-    def checkbox_callback(self, event):
-        # Get the item ID
-        item_id = self.tree_view.focus()
-
-        # Get the BooleanVar from tags
-        tags = self.tree_view.item(item_id, 'tags')
-        if tags:
-            checkbox_state = tags[0]
-
-            # Toggle the state of the associated BooleanVar
-            checkbox_state.set(not checkbox_state.get())
+            ))

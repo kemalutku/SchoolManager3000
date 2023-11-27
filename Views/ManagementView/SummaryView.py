@@ -30,7 +30,8 @@ class SummaryView(tk.Frame):
         syllabus_button = tk.Button(button_frame, text="Ders Programını\nGöster", height=5,
                                     command=lambda: self.open_mode_view(Views.SyllabusView, self.mode, True))
         self.add_relation_button = tk.Button(button_frame, text="Ders Ekle / Sil", height=5,
-                                        command=lambda: self.open_mode_view(Views.AddRemoveRelationView, self.mode, True))
+                                             command=lambda: self.open_mode_view(Views.AddRemoveRelationView, self.mode,
+                                                                                 True))
         show_details_button = tk.Button(button_frame, text="Bilgileri Göster", height=5,
                                         command=lambda: self.open_mode_view(Views.EntityDetailsView, self.mode, False))
 
@@ -87,40 +88,38 @@ class SummaryView(tk.Frame):
 
         elif mode == Views.EMPLOYEE:
             self.title.set("Çalışanlar")
-            self.tree_view['columns'] = ('okul_num', 'ad', 'soyad', 'yas', 'e-mail', 'maas')
+            self.tree_view['columns'] = ('okul_num', 'ad', 'soyad', 'yas', 'maas', 'meslek')
 
             self.tree_view.column('#0', width=0, stretch=tk.NO)
             self.tree_view.column("okul_num", width=150)
             self.tree_view.column("ad", width=150)
             self.tree_view.column("soyad", width=150)
             self.tree_view.column("yas", width=150)
-            self.tree_view.column("e-mail", width=150)
             self.tree_view.column("maas", width=150)
+            self.tree_view.column("meslek", width=150)
 
             self.tree_view.heading("okul_num", text="Çalışan Numarası", anchor=tk.W)
             self.tree_view.heading("ad", text="Ad", anchor=tk.W)
             self.tree_view.heading("soyad", text="Soyad", anchor=tk.W)
             self.tree_view.heading("yas", text="Yaş", anchor=tk.W)
-            self.tree_view.heading("e-mail", text="E-Mail", anchor=tk.W)
             self.tree_view.heading("maas", text="Maaş", anchor=tk.W)
+            self.tree_view.heading("meslek", text="Meslek", anchor=tk.W)
 
             self.add_new_button.config(text="Çalışan Ekle")
 
         elif mode == Views.ACTIVITY:
             self.title.set("Dersler")
-            self.tree_view['columns'] = ('ders_num', 'ad', 'gun', 'b_saati', 'type')
+            self.tree_view['columns'] = ('ders_num', 'ad', 'gun', 'type')
 
             self.tree_view.column('#0', width=0, stretch=tk.NO)
             self.tree_view.column("ders_num", width=150)
             self.tree_view.column("ad", width=150)
             self.tree_view.column("gun", width=150)
-            self.tree_view.column("b_saati", width=150)
             self.tree_view.column("type", width=150)
 
             self.tree_view.heading("ders_num", text="Ders Numarası", anchor=tk.W)
             self.tree_view.heading("ad", text="Ad", anchor=tk.W)
             self.tree_view.heading("gun", text="Gün", anchor=tk.W)
-            self.tree_view.heading("b_saati", text="Başlangıç Saati", anchor=tk.W)
             self.tree_view.heading("type", text="Tür", anchor=tk.W)
 
             self.add_new_button.config(text="Ders Ekle")
@@ -134,23 +133,40 @@ class SummaryView(tk.Frame):
         if self.mode == Views.STUDENT:
             students_query = "SELECT s.ID, s.FIRST_NAME, s.LAST_NAME, TIMESTAMPDIFF(YEAR," \
                              " s.DATE_OF_BIRTH, CURDATE())," \
-                             " COALESCE(g.FIRST_NAME, ' '), COALESCE(g.LAST_NAME, ' '), s.IS_ACTIVE" \
+                             " COALESCE(g.FIRST_NAME, ' '), COALESCE(g.LAST_NAME, ' ')," \
+                             "CASE WHEN s.IS_ACTIVE = 1 THEN 'EVET' WHEN s.IS_ACTIVE = 0 THEN 'HAYIR'" \
+                             " ELSE 'UNKNOWN' END AS IS_ACTIVE_TEXT" \
                              " FROM student s" \
                              " LEFT JOIN guardian g on g.STUDENT_ID = s.ID"
             students_list = self.cont.sql_query(students_query)
-            print(students_list)
 
             for student in students_list:
                 self.tree_view.insert('', 'end', values=student)
         elif self.mode == Views.EMPLOYEE:
-            employee_query = "SELECT ID, FIRST_NAME, LAST_NAME, DATE_OF_BIRTH FROM employee"
-            employee_list = self.cont.sql_query(employee_query)
+            employee_query = "SELECT ID, FIRST_NAME, LAST_NAME, DATE_OF_BIRTH, SALARY FROM employee"
+            teacher_query = "SELECT EMP_ID FROM teacher"
+            teacher_list = list(self.cont.sql_query(teacher_query))
+            teacher_list = [element for tup in teacher_list for element in tup]
+            employee_list = list(self.cont.sql_query(employee_query))
 
             for employee in employee_list:
+
+                employee = list(employee)
+
+                if employee[0] in teacher_list:
+                    employee.append('Öğretmen')
+                else:
+                    employee.append('Diğer')
                 self.tree_view.insert('', 'end', values=employee)
+
         elif self.mode == Views.ACTIVITY:
-            activity_query = "SELECT ID, COURSE_NAME FROM course"
-            employee_list = self.cont.sql_query(activity_query)
+            course_query = "SELECT c.ID, c.COURSE_NAME, " \
+                           "GROUP_CONCAT(DISTINCT sh.DAY_OF_WEEK ORDER BY sh.DAY_OF_WEEK) " \
+                           "AS DAYS_OF_WEEK FROM course c JOIN course_section cs ON cs.COURSE_ID = c.ID JOIN " \
+                           "section_hours sh ON sh.SEC_ID = cs.ID GROUP BY c.ID, c.COURSE_NAME; "
+            course_list = list(self.cont.sql_query(course_query))
 
-            for employee in employee_list:
-                self.tree_view.insert('', 'end', values=employee)
+            for course in course_list:
+                course = list(course)
+                course.append('Ders')
+                self.tree_view.insert('', 'end', values=course)

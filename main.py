@@ -61,6 +61,15 @@ class SchoolManager3000(tk.Tk):
         result = self.cursor.fetchall()
         return result
 
+    def commit(self):
+        try:
+            self.school_db.commit()
+            return True
+        except Exception as e:
+            self.school_db.rollback()
+            return False
+
+
 if __name__ == "__main__":
     app = SchoolManager3000()
     app.mainloop()
