@@ -28,7 +28,7 @@ class InventoryView(tk.Frame):
         self.tree_view['columns'] = ('id', 'malzeme', 'stok', 'fiyat')
 
         self.tree_view.column('#0', width=0, stretch=tk.NO)
-        self.tree_view.column('id', width=0, stretch=tk.NO)
+        self.tree_view.column('id', width=50, stretch=tk.NO)
         self.tree_view.column("malzeme", width=400, anchor=tk.W)
         self.tree_view.column("stok", width=25, anchor=tk.CENTER)
         self.tree_view.column("fiyat", width=25, anchor=tk.CENTER)
@@ -41,8 +41,7 @@ class InventoryView(tk.Frame):
         button_frame = tk.Frame(summary_frame)
         add_item_button = tk.Button(button_frame, text="Yeni Malzeme Ekle", height=5,
                                     command=lambda: self.cont.show_frame(Views.AddInventoryView))
-        modify_item_button = tk.Button(button_frame, text="Düzenle", height=5,
-                                       command=lambda: self.cont.show_frame(Views.ModifyInventoryView))
+        modify_item_button = tk.Button(button_frame, text="Düzenle", height=5, command=self.open_modify_inventory_view)
         remove_item_button = tk.Button(button_frame, text="Malzeme Sil", height=5, command=self.remove_inventory_item)
 
         add_item_button.pack(side="top", fill="x", pady=20, padx=10)
@@ -96,6 +95,15 @@ class InventoryView(tk.Frame):
             send_button.pack(side="left", padx=10)
             cancel_button = tk.Button(button_frame, text="İptal", command=popup.destroy)
             cancel_button.pack(side="left", padx=10)
+
+    def open_modify_inventory_view(self):
+        if self.tree_view.selection():
+            selected_item = self.tree_view.selection()[0]
+            item_data = self.tree_view.item(selected_item)
+            entity_id = item_data['values'][0]
+            management_view = self.cont.get_frame(Views.ModifyInventoryView)
+            management_view.entry_data = entity_id
+            self.cont.show_frame(Views.ModifyInventoryView)
 
     def populate_tree_view(self):
         for item in self.tree_view.get_children():
