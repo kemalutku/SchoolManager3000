@@ -19,6 +19,7 @@ class SyllabusView(tk.Frame):
         self.entry_data = None
         self.title = tk.StringVar(value="")
         self.cont = controller
+        self.preload_func = None
         self.labels = []
 
         title_frame = tk.Frame(self)

@@ -11,6 +11,7 @@ class AddEntityView(tk.Frame):
         self.mode = None
         self.title = tk.StringVar(value="")
         self.cont = controller
+        self.preload_func = None
         self.guardian_variable = tk.BooleanVar(value=True)
 
         title_frame = tk.Frame(self)
@@ -221,8 +222,6 @@ class AddEntityView(tk.Frame):
                 insert_teacher_query = "INSERT INTO teacher (ID, EMP_ID)" \
                                        " VALUES('{}', '{}')".format(teacher_id, employee_id)
                 self.cont.sql_query(insert_teacher_query)
-            print(insert_employee_query)
-            print(insert_teacher_query)
 
     def open_management_view(self):
         management_view = self.cont.get_frame(Views.SummaryView)
@@ -246,4 +245,5 @@ class AddEntityView(tk.Frame):
 
         popup.geometry(f"+{x_center}+{y_center}")
 
-        tk.Label(popup, text="İlgili değişiklik commit edilemedi!").pack(pady=20, side="top")
+        tk.Label(popup, text="Kayıt Başarısız. Lütfen girdiğiniz alanları ve internet bağlantısınızı kontrol edin!",
+                 wraplength=200).pack(pady=20, side="top")

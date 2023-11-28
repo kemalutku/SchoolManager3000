@@ -8,6 +8,7 @@ class AccountingHomeView(tk.Frame):
         tk.Frame.__init__(self, parent)
         self.mode = None
         self.title = tk.StringVar(value="Muhasebe")
+        self.preload_func = None
         self.cont = controller
 
         title_frame = tk.Frame(self)

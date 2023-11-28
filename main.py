@@ -51,6 +51,8 @@ class SchoolManager3000(tk.Tk):
     def show_frame(self, cont):
         if cont is not None:
             frame = self.frames[cont]
+            if frame.preload_func:
+                frame.preload_func()
             frame.tkraise()
 
     def get_frame(self, f):

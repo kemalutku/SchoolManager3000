@@ -8,6 +8,7 @@ class EntityDetailsView(tk.Frame):
         self.mode = None
         self.title = tk.StringVar(value="")
         self.cont = controller
+        self.preload_func = None
         self.entry_data = None
 
         title_frame = tk.Frame(self)
@@ -80,6 +81,7 @@ class EntityDetailsView(tk.Frame):
             tk.Label(self.courses_frame, text="Aktif Dersler").grid(row=1, column=0, padx=10, pady=10)
             tk.Label(self.courses_frame, text="Alınmış Dersler").grid(row=1, column=1, padx=10, pady=10)
 
+            tk.Label(self.courses_frame, text="Alınmış Dersler").grid(row=0, column=0)
 
         elif mode == Views.EMPLOYEE:
             pass

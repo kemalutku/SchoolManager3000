@@ -8,6 +8,7 @@ class LoginScreenView(tk.Frame):
 
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
+        self.preload_func = None
         # image = PhotoImage(file=r"Views/LoginScreen/TOBB_Logo.png")
 
         application_name_label = tk.Label(self, text="Okul Yönetim Sistemi \n 3000")

@@ -6,6 +6,7 @@ class MainScreenView(tk.Frame):
     def __init__(self, parent, cont):
         tk.Frame.__init__(self, parent)
         self.frame_name = "MainScreenView"
+        self.preload_func = None
         self.cont = cont
 
         logout_frame = tk.Frame(self)

@@ -8,6 +8,7 @@ class ReportView(tk.Frame):
         tk.Frame.__init__(self, parent)
         self.mode = None
         self.title = tk.StringVar(value="Raporlama")
+        self.preload_func = None
         self.cont = controller
 
         title_frame = tk.Frame(self)
