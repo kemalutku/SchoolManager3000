@@ -8,7 +8,7 @@ class CommunicationView(tk.Frame):
         tk.Frame.__init__(self, parent)
         self.mode = None
         self.title = tk.StringVar(value="İletişim")
-        self.preload_func = None
+        self.preload_func = self.populate_tree_view
         self.cont = controller
 
         title_frame = tk.Frame(self)

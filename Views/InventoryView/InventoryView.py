@@ -8,7 +8,7 @@ class InventoryView(tk.Frame):
         tk.Frame.__init__(self, parent)
         self.mode = None
         self.title = tk.StringVar(value="Envanter")
-        self.preload_func = None
+        self.preload_func = self.populate_tree_view
         self.cont = controller
 
         title_frame = tk.Frame(self)
@@ -56,8 +56,12 @@ class InventoryView(tk.Frame):
 
     def remove_inventory_item(self):
         if self.tree_view.selection():
-            def remove_inventory_query(inventory_id):
-                #TODO: Do removal query here
+            def remove_inventory_query(inventory_id, popup):
+                inventory_query = "DELETE FROM inventory WHERE ID={}".format(inventory_id)
+                self.cont.sql_query(inventory_query)
+                result = self.cont.commit()
+                if result:
+                    popup.destroy()
                 pass
 
             selected_item = self.tree_view.selection()[0]
@@ -88,7 +92,7 @@ class InventoryView(tk.Frame):
             tk.Label(popup, text=popup_text, wraplength=250).pack(pady=20, side="top")
             button_frame = tk.Frame(popup)
             button_frame.pack(pady=20, side="top")
-            send_button = tk.Button(button_frame, text="SİL", command=lambda: remove_inventory_query(entity_id))
+            send_button = tk.Button(button_frame, text="SİL", command=lambda: remove_inventory_query(entity_id, popup))
             send_button.pack(side="left", padx=10)
             cancel_button = tk.Button(button_frame, text="İptal", command=popup.destroy)
             cancel_button.pack(side="left", padx=10)
