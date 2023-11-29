@@ -40,69 +40,107 @@ class EntityDetailsView(tk.Frame):
             name_label = tk.Label(self.entity_frame, text="Ad")
             surname_label = tk.Label(self.entity_frame, text="Soyad")
             birth_date_label = tk.Label(self.entity_frame, text="Doğum Tarihi")
-            e_mail_label = tk.Label(self.entity_frame, text="E-Mail")
+
             guardian_label = tk.Label(self.entity_frame, text="Veli")
             guardian_name = tk.Label(self.entity_frame, text="Veli Ad")
             guardian_surname = tk.Label(self.entity_frame, text="Veli Soyadı")
+            e_mail_label = tk.Label(self.entity_frame, text=" Veli E-Mail")
             guardian_contact = tk.Label(self.entity_frame, text="Veli İletişim")
 
             okul_no_label_value = tk.Label(self.entity_frame, text=query_entity['okul_no'])
             name_label_value = tk.Label(self.entity_frame, text=query_entity['ad'])
             surname_label_value = tk.Label(self.entity_frame, text=query_entity['soyad'])
             birth_date_label_value = tk.Label(self.entity_frame, text=query_entity['dogum_tarihi'])
-            e_mail_label_value = tk.Label(self.entity_frame, text=query_entity['e-mail'])
+
             guardian_label_value = tk.Label(self.entity_frame, text=query_entity['veli'])
             guardian_name_value = tk.Label(self.entity_frame, text=query_entity['veli_ad'])
             guardian_surname_value = tk.Label(self.entity_frame, text=query_entity['veli_soyad'])
+            e_mail_label_value = tk.Label(self.entity_frame, text=query_entity['e-mail'])
             guardian_contact_value = tk.Label(self.entity_frame, text=query_entity['veli_numara'])
 
             okul_no_label.grid(row=0, column=0, sticky="nsew", pady=3, padx=3)
             name_label.grid(row=1, column=0, sticky="nsew", pady=3, padx=3)
             surname_label.grid(row=2, column=0, sticky="nsew", pady=3, padx=3)
             birth_date_label.grid(row=3, column=0, sticky="nsew", pady=3, padx=3)
-            e_mail_label.grid(row=4, column=0, sticky="nsew", pady=3, padx=3)
-            guardian_label.grid(row=5, column=0, sticky="nsew", pady=3, padx=3)
-            guardian_name.grid(row=6, column=0, sticky="nsew", pady=3, padx=3)
-            guardian_surname.grid(row=7, column=0, sticky="nsew", pady=3, padx=3)
+
+            guardian_label.grid(row=4, column=0, sticky="nsew", pady=3, padx=3)
+            guardian_name.grid(row=5, column=0, sticky="nsew", pady=3, padx=3)
+            guardian_surname.grid(row=6, column=0, sticky="nsew", pady=3, padx=3)
+            e_mail_label.grid(row=7, column=0, sticky="nsew", pady=3, padx=3)
             guardian_contact.grid(row=8, column=0, sticky="nsew", pady=3, padx=3)
 
             okul_no_label_value.grid(row=0, column=1, sticky="nsew", pady=3, padx=3)
             name_label_value.grid(row=1, column=1, sticky="nsew", pady=3, padx=3)
             surname_label_value.grid(row=2, column=1, sticky="nsew", pady=3, padx=3)
             birth_date_label_value.grid(row=3, column=1, sticky="nsew", pady=3, padx=3)
-            e_mail_label_value.grid(row=4, column=1, sticky="nsew", pady=3, padx=3)
-            guardian_label_value.grid(row=5, column=1, sticky="nsew", pady=3, padx=3)
-            guardian_name_value.grid(row=6, column=1, sticky="nsew", pady=3, padx=3)
-            guardian_surname_value.grid(row=7, column=1, sticky="nsew", pady=3, padx=3)
+
+            guardian_label_value.grid(row=4, column=1, sticky="nsew", pady=3, padx=3)
+            guardian_name_value.grid(row=5, column=1, sticky="nsew", pady=3, padx=3)
+            guardian_surname_value.grid(row=6, column=1, sticky="nsew", pady=3, padx=3)
+            e_mail_label_value.grid(row=7, column=1, sticky="nsew", pady=3, padx=3)
             guardian_contact_value.grid(row=8, column=1, sticky="nsew", pady=3, padx=3)
 
-            tk.Label(self.courses_frame, text="Ders Geçmişi").grid(row=0, column=0, columnspan=2)
 
             tk.Label(self.courses_frame, text="Aktif Dersler").grid(row=1, column=0, padx=10, pady=10)
             tk.Label(self.courses_frame, text="Alınmış Dersler").grid(row=1, column=1, padx=10, pady=10)
 
-            tk.Label(self.courses_frame, text="Alınmış Dersler").grid(row=0, column=0)
+
 
         elif mode == Views.EMPLOYEE:
-            pass
+            id_label = tk.Label(self.entity_frame, text="Çalışan Numarası")
+            name_label = tk.Label(self.entity_frame, text="Ad")
+            surname_label = tk.Label(self.entity_frame, text="Soyad")
+            birth_date_label = tk.Label(self.entity_frame, text="Doğum Tarihi")
+
+
+
+            id_label_value = tk.Label(self.entity_frame, text=query_entity['id'])
+            name_label_value = tk.Label(self.entity_frame, text=query_entity['ad'])
+            surname_label_value = tk.Label(self.entity_frame, text=query_entity['soyad'])
+            birth_date_label_value = tk.Label(self.entity_frame, text=query_entity['dogum_tarihi'])
+
+
+            id_label.grid(row=0, column=0, sticky="nsew", pady=3, padx=3)
+            name_label.grid(row=1, column=0, sticky="nsew", pady=3, padx=3)
+            surname_label.grid(row=2, column=0, sticky="nsew", pady=3, padx=3)
+            birth_date_label.grid(row=3, column=0, sticky="nsew", pady=3, padx=3)
+
+
+            id_label_value.grid(row=0, column=1, sticky="nsew", pady=3, padx=3)
+            name_label_value.grid(row=1, column=1, sticky="nsew", pady=3, padx=3)
+            surname_label_value.grid(row=2, column=1, sticky="nsew", pady=3, padx=3)
+            birth_date_label_value.grid(row=3, column=1, sticky="nsew", pady=3, padx=3)
+
         elif mode == Views.ACTIVITY:
             pass
 
     def get_entity_data(self):
         # TODO: Send and parse the sql commands to get the entity details here
         if self.mode == Views.STUDENT:
-            query = "SELECT ID, FIRST_NAME, LAST_NAME, DATE_OF_BIRTH FROM student WHERE ID ={}".format(self.entry_data)
+            query = "SELECT s.ID, s.FIRST_NAME, s.LAST_NAME, s.DATE_OF_BIRTH, g.FIRST_NAME ,g.LAST_NAME ,g.MAIL ,g.CONTACT  FROM student s , guardian g WHERE s.ID ={} and g.STUDENT_ID={}"\
+                .format(self.entry_data,self.entry_data)
             result = self.cont.sql_query(query)[0]
             entitiy = {
                 'okul_no': result[0],
                 'ad': result[1],
                 'soyad': result[2],
                 'dogum_tarihi': result[3],
-                'e-mail': "",
+                'e-mail': result[6],
                 'veli': "",
-                'veli_ad': "",
-                'veli_soyad': "",
-                'veli_numara': "",
+                'veli_ad': result[4],
+                'veli_soyad': result[5],
+                'veli_numara': result[7],
+            }
+            return entitiy
+        elif self.mode == Views.EMPLOYEE:
+            query = "SELECT e.ID, e.FIRST_NAME, e.LAST_NAME, e.DATE_OF_BIRTH FROM employee e WHERE e.ID ={} "\
+                .format(self.entry_data)
+            result = self.cont.sql_query(query)[0]
+            entitiy = {
+                'id': result[0],
+                'ad': result[1],
+                'soyad': result[2],
+                'dogum_tarihi': result[3],
             }
             return entitiy
 

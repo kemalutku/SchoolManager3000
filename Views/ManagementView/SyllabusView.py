@@ -59,7 +59,10 @@ class SyllabusView(tk.Frame):
 
     def set_data(self, values):
         for label in self.labels:
-            label.configure(bg='systemWindowBackgroundColor')
+            try:
+                label.configure(bg='systemWindowBackgroundColor')
+            except:
+                label.configure(bg='white')
             label.config(text="")
 
         for name, hour, day in values:

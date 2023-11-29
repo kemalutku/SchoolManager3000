@@ -34,7 +34,7 @@ class SummaryView(tk.Frame):
                                              command=lambda: self.open_mode_view(Views.AddRemoveRelationView, self.mode,
                                                                                  True))
         show_details_button = tk.Button(button_frame, text="Bilgileri Göster", height=5,
-                                        command=lambda: self.open_mode_view(Views.EntityDetailsView, self.mode, False))
+                                        command=lambda: self.open_mode_view(Views.EntityDetailsView, self.mode, True))
 
         self.add_new_button.pack(side="top", fill="x", pady=20, padx=10)
         syllabus_button.pack(side="top", fill="x", pady=20, padx=10)
@@ -78,7 +78,7 @@ class SummaryView(tk.Frame):
             self.tree_view.column("aktif", width=150)
 
             self.tree_view.heading("okul_num", text="Okul Numarası")
-            self.tree_view.heading("ad", text="Ad")
+            self.tree_view.heading("ad", text="Ad", command=lambda : self.sort_treeview("ad",False))
             self.tree_view.heading("soyad", text="Soyad")
             self.tree_view.heading("yas", text="Yaş")
             self.tree_view.heading("veli_ad", text="Veli Adı")
@@ -171,3 +171,10 @@ class SummaryView(tk.Frame):
                 course = list(course)
                 course.append('Ders')
                 self.tree_view.insert('', 'end', values=course)
+
+    def sort_treeview(self, col, descending):
+        data = [(self.tree_view.set(item, col), item) for item in self.tree_view.get_children('')]
+        data.sort(reverse=descending)
+        for index, (val, item) in enumerate(data):
+            self.tree_view.move(item, '', index)
+        self.tree_view.heading(col, command=lambda: self.sort_treeview( col, not descending))
