@@ -31,6 +31,7 @@ class EntityDetailsView(tk.Frame):
 
         self.courses_frame.columnconfigure(0, weight=1)
         self.courses_frame.columnconfigure(1, weight=1)
+        self.course_labels = []
 
     def set_mode(self, mode):
         self.mode = mode
@@ -40,57 +41,49 @@ class EntityDetailsView(tk.Frame):
             name_label = tk.Label(self.entity_frame, text="Ad")
             surname_label = tk.Label(self.entity_frame, text="Soyad")
             birth_date_label = tk.Label(self.entity_frame, text="Doğum Tarihi")
-
-            if len(query_entity) != 4:
-                guardian_label = tk.Label(self.entity_frame, text="Veli")
-                guardian_name = tk.Label(self.entity_frame, text="Veli Ad")
-                guardian_surname = tk.Label(self.entity_frame, text="Veli Soyadı")
-                e_mail_label = tk.Label(self.entity_frame, text=" Veli E-Mail")
-                guardian_contact = tk.Label(self.entity_frame, text="Veli İletişim")
+            guardian_label = tk.Label(self.entity_frame, text="Veli")
+            guardian_name = tk.Label(self.entity_frame, text="Veli Ad")
+            guardian_surname = tk.Label(self.entity_frame, text="Veli Soyadı")
+            e_mail_label = tk.Label(self.entity_frame, text=" Veli E-Mail")
+            guardian_contact = tk.Label(self.entity_frame, text="Veli İletişim")
 
             okul_no_label_value = tk.Label(self.entity_frame, text=query_entity['okul_no'])
             name_label_value = tk.Label(self.entity_frame, text=query_entity['ad'])
             surname_label_value = tk.Label(self.entity_frame, text=query_entity['soyad'])
             birth_date_label_value = tk.Label(self.entity_frame, text=query_entity['dogum_tarihi'])
-
-            if len(query_entity) != 4:
-                guardian_label_value = tk.Label(self.entity_frame, text=query_entity['veli'])
-                guardian_name_value = tk.Label(self.entity_frame, text=query_entity['veli_ad'])
-                guardian_surname_value = tk.Label(self.entity_frame, text=query_entity['veli_soyad'])
-                e_mail_label_value = tk.Label(self.entity_frame, text=query_entity['e-mail'])
-                guardian_contact_value = tk.Label(self.entity_frame, text=query_entity['veli_numara'])
+            guardian_label_value = tk.Label(self.entity_frame, text=query_entity['veli'])
+            guardian_name_value = tk.Label(self.entity_frame, text=query_entity['veli_ad'])
+            guardian_surname_value = tk.Label(self.entity_frame, text=query_entity['veli_soyad'])
+            e_mail_label_value = tk.Label(self.entity_frame, text=query_entity['e-mail'])
+            guardian_contact_value = tk.Label(self.entity_frame, text=query_entity['veli_numara'])
 
             okul_no_label.grid(row=0, column=0, sticky="nsew", pady=3, padx=3)
             name_label.grid(row=1, column=0, sticky="nsew", pady=3, padx=3)
             surname_label.grid(row=2, column=0, sticky="nsew", pady=3, padx=3)
             birth_date_label.grid(row=3, column=0, sticky="nsew", pady=3, padx=3)
-
-            if len(query_entity) != 4:
-                guardian_label.grid(row=4, column=0, sticky="nsew", pady=3, padx=3)
-                guardian_name.grid(row=5, column=0, sticky="nsew", pady=3, padx=3)
-                guardian_surname.grid(row=6, column=0, sticky="nsew", pady=3, padx=3)
-                e_mail_label.grid(row=7, column=0, sticky="nsew", pady=3, padx=3)
-                guardian_contact.grid(row=8, column=0, sticky="nsew", pady=3, padx=3)
+            guardian_label.grid(row=4, column=0, sticky="nsew", pady=3, padx=3)
+            guardian_name.grid(row=5, column=0, sticky="nsew", pady=3, padx=3)
+            guardian_surname.grid(row=6, column=0, sticky="nsew", pady=3, padx=3)
+            e_mail_label.grid(row=7, column=0, sticky="nsew", pady=3, padx=3)
+            guardian_contact.grid(row=8, column=0, sticky="nsew", pady=3, padx=3)
 
             okul_no_label_value.grid(row=0, column=1, sticky="nsew", pady=3, padx=3)
             name_label_value.grid(row=1, column=1, sticky="nsew", pady=3, padx=3)
             surname_label_value.grid(row=2, column=1, sticky="nsew", pady=3, padx=3)
             birth_date_label_value.grid(row=3, column=1, sticky="nsew", pady=3, padx=3)
-            if len(query_entity) != 4:
-                guardian_label_value.grid(row=4, column=1, sticky="nsew", pady=3, padx=3)
-                guardian_name_value.grid(row=5, column=1, sticky="nsew", pady=3, padx=3)
-                guardian_surname_value.grid(row=6, column=1, sticky="nsew", pady=3, padx=3)
-                e_mail_label_value.grid(row=7, column=1, sticky="nsew", pady=3, padx=3)
-                guardian_contact_value.grid(row=8, column=1, sticky="nsew", pady=3, padx=3)
+            guardian_label_value.grid(row=4, column=1, sticky="nsew", pady=3, padx=3)
+            guardian_name_value.grid(row=5, column=1, sticky="nsew", pady=3, padx=3)
+            guardian_surname_value.grid(row=6, column=1, sticky="nsew", pady=3, padx=3)
+            e_mail_label_value.grid(row=7, column=1, sticky="nsew", pady=3, padx=3)
+            guardian_contact_value.grid(row=8, column=1, sticky="nsew", pady=3, padx=3)
             tk.Label(self.courses_frame, text="Alınan Dersler").grid(row=1, column=0, padx=10, pady=10)
             i = 2
+            self.clear_tables()
             for lecture in query_entity['dersler']:
-                tk.Label(self.courses_frame, text=lecture).grid(row=i, column=0, padx=10, pady=10)
+                lbl = tk.Label(self.courses_frame, text=lecture)
+                lbl.grid(row=i, column=0, padx=10, pady=10)
+                self.course_labels.append(lbl)
                 i += 1
-
-
-
-
 
         elif mode == Views.EMPLOYEE:
             id_label = tk.Label(self.entity_frame, text="Çalışan Numarası")
@@ -189,3 +182,7 @@ class EntityDetailsView(tk.Frame):
         management_view = self.cont.get_frame(Views.SummaryView)
         management_view.set_mode(self.mode)
         self.cont.show_frame(Views.SummaryView)
+
+    def clear_tables(self):
+        for label in self.course_labels:
+            label.config(text="")

@@ -479,7 +479,7 @@ class AddRemoveRelationView(tk.Frame):
         tk.Label(popup, text="Başarılı!",
                  wraplength=200).pack(pady=20, side="top")
 
-    def cakisma_popup(self):
+    def overlap_popup(self):
         popup = tk.Toplevel(self)
         popup.title("Çakışma Var!")
         popup_width = 300
@@ -532,12 +532,13 @@ class AddRemoveRelationView(tk.Frame):
                                  "'{}');".format(student_id, activity_time, activity_day, activity_name)
             self.cont.sql_query(add_activity_query)
             commit_result = self.cont.commit()
+            print(commit_result)
             if commit_result is None:
                 self.add_course_commit_success_popup()
             else:
                 self.add_course_commit_fail_popup()
         else:
-            self.cakisma_popup()
+            self.overlap_popup()
 
     def rm_activity_action(self):
         student_id = self.entry_data

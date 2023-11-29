@@ -264,7 +264,10 @@ class AddEntityView(tk.Frame):
             guardian_contact = self.entries[8].get()
             student_birth_date = self.entries[3].get_date()
             date_str = student_birth_date
-            date_obj = datetime.strptime(date_str, "%d.%m.%Y")
+            try:
+                date_obj = datetime.strptime(date_str, '%m/%d/%y')
+            except ValueError:
+                date_obj = datetime.strptime(date_str, '%d/%m/%Y')
             student_formatted_date = date_obj.strftime("%Y-%m-%d")
 
             insert_student_query = "INSERT INTO student (IS_ACTIVE, ID, FIRST_NAME, LAST_NAME, DATE_OF_BIRTH) " \
