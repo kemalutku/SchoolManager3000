@@ -54,7 +54,7 @@ class AddRemoveRelationView(tk.Frame):
             self.add_course_dropdown.grid(row=4, column=1, sticky="w")
             add_course_names_query = "SELECT c.COURSE_NAME FROM course c WHERE c.ID NOT IN (SELECT cs.COURSE_ID" \
                                      " FROM student_section ss JOIN course_section cs ON ss.SECTION_ID = cs.ID" \
-                                     " WHERE ss.STUDENT_ID = {});".format(self.entry_data)
+                                     " WHERE ss.STUDENT_ID = {}) ORDER BY c.COURSE_NAME;".format(self.entry_data)
             add_course_names = [row[0] for row in self.cont.sql_query(add_course_names_query)]
             self.add_course_dropdown['values'] = add_course_names
 
@@ -148,14 +148,28 @@ class AddRemoveRelationView(tk.Frame):
             self.add_course_commit_success_popup()
         else:
             self.add_course_commit_fail_popup()
-        print(commit_result)
 
     def rm_relation_action(self):
-        pass
+        selected_course = self.rm_course_dropdown.get()
+        student_id = self.entry_data
+        set_id = "SET @StudentID = {};".format(student_id)
+        set_course = "SET @CourseName = '{}';".format(selected_course)
+        rm_query = "DELETE FROM student_section WHERE STUDENT_ID = @StudentID AND SECTION_ID IN " \
+                   "(SELECT ID FROM course_section WHERE COURSE_ID = (SELECT ID FROM course " \
+                   "WHERE COURSE_NAME = @CourseName));"
+        rm_course_query = [set_id, set_course, rm_query]
+        for query in rm_course_query:
+            self.cont.sql_query(query)
+            self.cont.commit()
+        commit_result = self.cont.commit
+        if commit_result:
+            self.add_course_commit_success_popup()
+        else:
+            self.add_course_commit_fail_popup()
 
     def add_course_commit_fail_popup(self):
         popup = tk.Toplevel(self)
-        popup.title("Kayıt Başarısız!")
+        popup.title("Başarısız!")
         popup_width = 300
         popup_height = 100
         popup.geometry(f"{popup_width}x{popup_height}")
@@ -170,12 +184,12 @@ class AddRemoveRelationView(tk.Frame):
 
         popup.geometry(f"+{x_center}+{y_center}")
 
-        tk.Label(popup, text="Kayıt Başarısız. Lütfen girdiğiniz alanları ve internet bağlantısınızı kontrol edin!",
+        tk.Label(popup, text="Başarısız. Lütfen girdiğiniz alanları ve internet bağlantısınızı kontrol edin!",
                  wraplength=200).pack(pady=20, side="top")
 
     def add_course_commit_success_popup(self):
         popup = tk.Toplevel(self)
-        popup.title("Kayıt Başarılı!")
+        popup.title("Başarılı!")
         popup_width = 300
         popup_height = 100
         popup.geometry(f"{popup_width}x{popup_height}")
@@ -190,5 +204,5 @@ class AddRemoveRelationView(tk.Frame):
 
         popup.geometry(f"+{x_center}+{y_center}")
 
-        tk.Label(popup, text="Kayıt Başarılı!",
+        tk.Label(popup, text="Başarılı!",
                  wraplength=200).pack(pady=20, side="top")
