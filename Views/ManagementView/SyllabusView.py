@@ -68,7 +68,10 @@ class SyllabusView(tk.Frame):
         for name, hour, day in values:
             if name is not None:
                 day_value = WEEK_MAPPING[day]
-                hour_value = int(str(hour)[:2]) - 8
+                try:
+                    hour_value = int(str(hour)[:2]) - 8
+                except ValueError:
+                    hour_value = int(str(hour)[:1]) - 8
                 target_box = 12 * day_value + hour_value
                 target_label = self.labels[target_box]
                 target_label.config(text=name)
