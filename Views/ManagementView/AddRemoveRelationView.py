@@ -6,6 +6,7 @@ import Views
 class AddRemoveRelationView(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
+        self.rm_activity_dropdown = None
         self.activity_day = None
         self.add_activity_dropdown = None
         self.add_course_dropdown = None
@@ -131,6 +132,51 @@ class AddRemoveRelationView(tk.Frame):
                                             command=self.add_activity_action)
             add_activity_button.grid(row=13, column=0, columnspan=2, sticky="we")
 
+            # **********************************************************************
+
+            tk.Label(self.remove_relation_frame, text="AKTİVİTE SİL").grid(row=6, column=0, sticky="we", padx=20,
+                                                                           pady=20,
+                                                                           columnspan=2)
+            tk.Label(self.remove_relation_frame, text="Öğrenci Numarası").grid(row=7, column=0, sticky="w")
+            tk.Label(self.remove_relation_frame, text="Ad").grid(row=8, column=0, sticky="w")
+            tk.Label(self.remove_relation_frame, text="Soyad").grid(row=9, column=0, sticky="w")
+            tk.Label(self.remove_relation_frame, text="Aktivite").grid(row=10, column=0, sticky="w")
+
+            tk.Label(self.remove_relation_frame, text="").grid(row=7, column=1, sticky="w")
+            tk.Label(self.remove_relation_frame, text="").grid(row=8, column=1, sticky="w")
+            tk.Label(self.remove_relation_frame, text="").grid(row=9, column=1, sticky="w")
+            self.rm_activity_dropdown = ttk.Combobox(self.remove_relation_frame)
+            self.rm_activity_dropdown.grid(row=10, column=1, sticky="w")
+            rm_activity_names_query = "SELECT DISTINCT ACTIVITY_NAME FROM" \
+                                      " student_activities WHERE " \
+                                      "STUDENT_ID = {};".format(self.entry_data)
+            rm_activity_names = [row[0] for row in self.cont.sql_query(rm_activity_names_query)]
+            self.rm_activity_dropdown['values'] = rm_activity_names
+
+            rm_act_student_id_entry = tk.Entry(self.remove_relation_frame)
+            rm_act_student_id_entry.insert(0, str(self.entry_data))
+            rm_act_student_id_entry['state'] = 'disabled'
+            rm_act_student_id_entry.grid(row=7, column=1, sticky="w")
+
+            sname_query = "SELECT s.FIRST_NAME, s.LAST_NAME " \
+                          "FROM student s WHERE s.ID = {}".format(self.entry_data)
+            sname = self.cont.sql_query(sname_query)
+
+            rm_act_student_name_entry = tk.Entry(self.remove_relation_frame)
+            rm_act_student_name_entry.insert(0, str(sname[0][0]))
+            rm_act_student_name_entry['state'] = 'disabled'
+            rm_act_student_name_entry.grid(row=8, column=1, sticky="w")
+            rm_act_student_surname_entry = tk.Entry(self.remove_relation_frame)
+            rm_act_student_surname_entry.insert(0, str(sname[0][1]))
+            rm_act_student_surname_entry['state'] = 'disabled'
+            rm_act_student_surname_entry.grid(row=9, column=1, sticky="w")
+
+            remove_act_relation_button = tk.Button(self.remove_relation_frame, text="Aktivite Sil",
+                                                   command=self.rm_activity_action)
+            remove_act_relation_button.grid(row=11, column=0, columnspan=2, sticky="we")
+
+            # **********************************************************************
+
             #########################################################################
             tk.Label(self.remove_relation_frame, text="DERS SİL").grid(row=0, column=0, sticky="we", padx=20, pady=20,
                                                                        columnspan=2)
@@ -171,6 +217,7 @@ class AddRemoveRelationView(tk.Frame):
             remove_relation_button = tk.Button(self.remove_relation_frame, text="Ders Sil",
                                                command=self.rm_relation_action)
             remove_relation_button.grid(row=5, column=0, columnspan=2, sticky="we")
+
         elif mode == Views.ACTIVITY:
             pass
 
@@ -317,3 +364,15 @@ class AddRemoveRelationView(tk.Frame):
                 self.add_course_commit_fail_popup()
         else:
             self.overlap_popup()
+
+    def rm_activity_action(self):
+        student_id = self.entry_data
+        activity_name = self.rm_activity_dropdown.get()
+        act_remove_query = "DELETE FROM student_activities " \
+                           "WHERE ACTIVITY_NAME = '{}' AND STUDENT_ID = {};".format(activity_name, student_id)
+        self.cont.sql_query(act_remove_query)
+        commit_result = self.cont.commit()
+        if commit_result is None:
+            self.add_course_commit_success_popup()
+        else:
+            self.add_course_commit_fail_popup()
