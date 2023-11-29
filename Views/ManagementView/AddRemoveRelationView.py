@@ -6,6 +6,8 @@ import Views
 class AddRemoveRelationView(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
+        self.activity_day = None
+        self.add_activity_dropdown = None
         self.add_course_dropdown = None
         self.rm_course_dropdown = None
         self.mode = None
@@ -13,6 +15,7 @@ class AddRemoveRelationView(tk.Frame):
         self.title = tk.StringVar(value="Ders Ekle/Sil")
         self.preload_func = None
         self.cont = controller
+        self.activity_entries = []
 
         title_frame = tk.Frame(self)
         back_button = tk.Button(title_frame, text="←", command=lambda: self.open_management_view())
@@ -81,6 +84,54 @@ class AddRemoveRelationView(tk.Frame):
                                             command=self.add_relation_action)
             add_relation_button.grid(row=5, column=0, columnspan=2, sticky="we")
 
+            #########################################################################
+
+            tk.Label(self.add_relation_frame, text="AKTİVİTE EKLE").grid(row=6, column=0, sticky="we", padx=20, pady=20,
+                                                                         columnspan=2)
+            tk.Label(self.add_relation_frame, text="Öğrenci Numarası").grid(row=7, column=0, sticky="w")
+            tk.Label(self.add_relation_frame, text="Ad").grid(row=8, column=0, sticky="w")
+            tk.Label(self.add_relation_frame, text="Soyad").grid(row=9, column=0, sticky="w")
+            tk.Label(self.add_relation_frame, text="Aktivite").grid(row=10, column=0, sticky="w")
+            tk.Label(self.add_relation_frame, text="Gün").grid(row=11, column=0, sticky="w")
+            tk.Label(self.add_relation_frame, text="Saat(hh:mm:ss)").grid(row=12, column=0, sticky="w")
+
+            tk.Label(self.add_relation_frame, text="").grid(row=7, column=1, sticky="w")
+            tk.Label(self.add_relation_frame, text="").grid(row=8, column=1, sticky="w")
+            tk.Label(self.add_relation_frame, text="").grid(row=9, column=1, sticky="w")
+
+            a_student_id = self.entry_data
+            a_student_id_entry = tk.Entry(self.add_relation_frame)
+            a_student_id_entry.insert(0, str(a_student_id))
+            a_student_id_entry['state'] = 'disabled'
+            a_student_id_entry.grid(row=7, column=1, sticky="w")
+
+            sname_query = "SELECT s.FIRST_NAME, s.LAST_NAME " \
+                          "FROM student s WHERE s.ID = {}".format(self.entry_data)
+            sname = self.cont.sql_query(sname_query)
+
+            a_add_student_name_entry = tk.Entry(self.add_relation_frame)
+            a_add_student_name_entry.insert(0, str(sname[0][0]))
+            a_add_student_name_entry['state'] = 'disabled'
+            a_add_student_name_entry.grid(row=8, column=1, sticky="w")
+            a_add_student_surname_entry = tk.Entry(self.add_relation_frame)
+            a_add_student_surname_entry.insert(0, str(sname[0][1]))
+            a_add_student_surname_entry['state'] = 'disabled'
+            a_add_student_surname_entry.grid(row=9, column=1, sticky="w")
+            activity_name = tk.Entry(self.add_relation_frame)
+            activity_name.grid(row=10, column=1, sticky="w")
+            days_of_week = ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"]
+            self.activity_day = ttk.Combobox(self.add_relation_frame, values=days_of_week)
+            self.activity_day.grid(row=11, column=1, sticky="w")
+            activity_time = tk.Entry(self.add_relation_frame)
+            activity_time.grid(row=12, column=1, sticky="w")
+            self.activity_entries.append(activity_time)
+            self.activity_entries.append(activity_name)
+
+            add_activity_button = tk.Button(self.add_relation_frame, text="Aktivite Ekle",
+                                            command=self.add_activity_action)
+            add_activity_button.grid(row=13, column=0, columnspan=2, sticky="we")
+
+            #########################################################################
             tk.Label(self.remove_relation_frame, text="DERS SİL").grid(row=0, column=0, sticky="we", padx=20, pady=20,
                                                                        columnspan=2)
             tk.Label(self.remove_relation_frame, text="Öğrenci Numarası").grid(row=1, column=0, sticky="w")
@@ -206,3 +257,64 @@ class AddRemoveRelationView(tk.Frame):
 
         tk.Label(popup, text="Başarılı!",
                  wraplength=200).pack(pady=20, side="top")
+
+    def cakisma_popup(self):
+        popup = tk.Toplevel(self)
+        popup.title("Çakışma Var!")
+        popup_width = 300
+        popup_height = 100
+        popup.geometry(f"{popup_width}x{popup_height}")
+
+        # Calculate position x and y coordinates
+        x_left = self.winfo_x()
+        y_top = self.winfo_y()
+        root_width = self.winfo_width()
+        root_height = self.winfo_height()
+        x_center = x_left + (root_width - popup_width) // 2
+        y_center = y_top + (root_height - popup_height) // 2
+
+        popup.geometry(f"+{x_center}+{y_center}")
+
+        tk.Label(popup, text="Çakışma Var!",
+                 wraplength=200).pack(pady=20, side="top")
+
+    def add_activity_action(self):
+        student_id = self.entry_data
+        activity_day = self.activity_day.get()
+        activity_time = self.activity_entries[0].get()
+        activity_name = self.activity_entries[1].get()
+        busy_hours_query = """
+            SELECT DISTINCT sa.START_HOUR
+            FROM student_activities sa
+            WHERE sa.STUDENT_ID = {} AND sa.DAY_OF_WEEK = '{}'
+            UNION
+            SELECT DISTINCT sh.START_HOUR
+            FROM section_hours sh
+            JOIN course_section cs ON sh.SEC_ID = cs.ID
+            JOIN student_section ss ON cs.ID = ss.SECTION_ID
+            WHERE ss.STUDENT_ID = {} AND sh.DAY_OF_WEEK = '{}';
+        """.format(student_id, activity_day, student_id, activity_day)
+        busy_result = self.cont.sql_query(busy_hours_query)
+        busy_result = [
+            "{:02}:{:02}:{:02}".format(
+                int(item[0].total_seconds()) // 3600,
+                (int(item[0].total_seconds()) % 3600) // 60,
+                int(item[0].total_seconds()) % 60,
+            )
+            for item in busy_result
+        ]
+
+        if activity_time not in busy_result:
+            add_activity_query = "INSERT INTO student_activities " \
+                                 "(STUDENT_ID, START_HOUR, DAY_OF_WEEK, ACTIVITY_NAME) VALUES" \
+                                 " ({}, '{}', '{}', " \
+                                 "'{}');".format(student_id, activity_time, activity_day, activity_name)
+            self.cont.sql_query(add_activity_query)
+            commit_result = self.cont.commit()
+            print(commit_result)
+            if commit_result is None:
+                self.add_course_commit_success_popup()
+            else:
+                self.add_course_commit_fail_popup()
+        else:
+            self.cakisma_popup()
