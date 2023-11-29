@@ -365,7 +365,6 @@ class AddRemoveRelationView(tk.Frame):
             self.cakisma_popup()
 
     def rm_activity_action(self):
-        print("düğme çalışıyor")
         student_id = self.entry_data
         activity_name = self.rm_activity_dropdown.get()
         act_remove_query = "DELETE FROM student_activities " \
