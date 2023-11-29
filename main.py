@@ -38,7 +38,7 @@ class SchoolManager3000(tk.Tk):
         for F in [LoginScreenView, MainScreenView,
                   SummaryView, AddEntityView, SyllabusView, AddRemoveRelationView, EntityDetailsView,
                   InventoryView, ModifyInventoryView, AddInventoryView,
-                  AccountingHomeView, ReportView,
+                  AccountingHomeView, ReportView, MonthlyReportView, WeeklyReportView,
                   CommunicationView
                   ]:
             frame = F(container, self)

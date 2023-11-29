@@ -9,6 +9,8 @@ from Views.InventoryView.InventoryView import InventoryView
 from Views.InventoryView.AddInventoryView import AddInventoryView
 from Views.InventoryView.ModifyInventoryView import ModifyInventoryView
 from Views.AccountingView.AccountingView import AccountingHomeView
+from Views.AccountingView.MonthlyReportView import MonthlyReportView
+from Views.AccountingView.WeeklyReportView import WeeklyReportView
 from Views.AccountingView.ReportView import ReportView
 from Views.CommunicationView.CommunicationView import CommunicationView
 
