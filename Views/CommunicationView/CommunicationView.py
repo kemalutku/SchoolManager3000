@@ -32,10 +32,10 @@ class CommunicationView(tk.Frame):
         self.age_entry_u = tk.Entry(filter_frame, width=5)
         self.age_entry_u.grid(row=0, column=3, padx=2)
 
-        ders_label = tk.Label(filter_frame, text="Alınan Ders")
-        ders_label.grid(row=1, column=0, pady=10, columnspan=4)
-        self.ders_dropdown = ttk.Combobox(filter_frame)
-        self.ders_dropdown.grid(row=2, column=0, columnspan=4)
+        # ders_label = tk.Label(filter_frame, text="Alınan Ders")
+        # ders_label.grid(row=1, column=0, pady=10, columnspan=4)
+        # self.ders_dropdown = ttk.Combobox(filter_frame)
+        # self.ders_dropdown.grid(row=2, column=0, columnspan=4)
 
         filter_button = tk.Button(filter_frame, text="Filtrele", command=self.filter_command)
         filter_button.grid(row=5, column=0, columnspan=4, sticky="s")
@@ -117,7 +117,19 @@ class CommunicationView(tk.Frame):
         cancel_button.pack(side="left", padx=10)
 
     def filter_command(self):
-        pass
+        age_l = self.age_entry_l.get()
+        age_u = self.age_entry_u.get()
+        age_filter_q = ("SELECT  s.ID, g.FIRST_NAME, "
+                        "g.LAST_NAME, "
+                        "TIMESTAMPDIFF(YEAR, s.DATE_OF_BIRTH, CURDATE()), "
+                        "g.CONTACT "
+                        "FROM student s "
+                        "JOIN guardian g on g.STUDENT_ID = s.ID "
+                        "WHERE TIMESTAMPDIFF(YEAR, s.DATE_OF_BIRTH, CURDATE()) "
+                        "BETWEEN {} AND {}").format(
+            age_l, age_u)
+        result = self.cont.sql_query(age_filter_q)
+        self.populate_tree_view(q_result=result)
 
     def configure_tree_view(self):
         self.title.set("Öğrenciler")
@@ -142,15 +154,17 @@ class CommunicationView(tk.Frame):
 
         self.populate_tree_view()
 
-    def populate_tree_view(self):
+    def populate_tree_view(self, q_result=None):
         for item in self.tree_view.get_children():
             self.tree_view.delete(item)
-
-        communication_query = "SELECT s.ID, g.FIRST_NAME, g.LAST_NAME, TIMESTAMPDIFF(YEAR," \
-                              " s.DATE_OF_BIRTH, CURDATE()), g.CONTACT" \
-                              " FROM student s" \
-                              " JOIN guardian g on g.STUDENT_ID = s.ID"
-        communication_list = self.cont.sql_query(communication_query)
+        if q_result is None:
+            communication_query = "SELECT s.ID, g.FIRST_NAME, g.LAST_NAME, TIMESTAMPDIFF(YEAR," \
+                                  " s.DATE_OF_BIRTH, CURDATE()), g.CONTACT" \
+                                  " FROM student s" \
+                                  " JOIN guardian g on g.STUDENT_ID = s.ID"
+            communication_list = self.cont.sql_query(communication_query)
+        else:
+            communication_list = q_result
 
         for guardian in communication_list:
             # Insert data into the tree view, specifying column values explicitly

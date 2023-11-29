@@ -185,15 +185,17 @@ class AddEntityView(tk.Frame):
             teacher_query = "SELECT CONCAT(e.ID, '-', e.FIRST_NAME ,' ' ,e.LAST_NAME) " \
                             "FROM teacher t LEFT JOIN employee e ON t.EMP_ID =e.ID;"
             teacher_list = self.cont.sql_query(teacher_query)
-            entity_type_selector = ttk.Combobox(self.entity_details_frame, values=['Ders', 'Aktivite'],
+            entity_type_selector = ttk.Combobox(self.entity_details_frame, values=['Ders'],
                                                 state='readonly')
+            entity_type_selector.set('Ders')
             name_entry = tk.Entry(self.entity_details_frame)
             teacher_selector = ttk.Combobox(self.entity_details_frame, values=[teacher[0] for teacher in teacher_list],
                                             state='readonly')
             book_entry = tk.Entry(self.entity_details_frame)
             start_date_calendar = Calendar(self.entity_details_frame)
             end_date_calendar = Calendar(self.entity_details_frame)
-            add_activity_button = tk.Button(self.entity_details_frame, text="Ders / Aktivite Ekle")
+            add_activity_button = tk.Button(self.entity_details_frame, text="Ders / Aktivite Ekle",
+                                            command=self.add_entity_action)
 
             self.entries.append(entity_type_selector)
             self.entries.append(name_entry)
@@ -319,7 +321,47 @@ class AddEntityView(tk.Frame):
                                        " VALUES('{}', '{}')".format(teacher_id, employee_id)
                 self.cont.sql_query(insert_teacher_query)
         elif self.mode == Views.ACTIVITY:
-            pass
+            # self.entries.append(entity_type_selector)
+            # self.entries.append(name_entry)
+            # self.entries.append(teacher_selector)
+            # self.entries.append(book_entry)
+            # self.entries.append(start_date_calendar)
+            # self.entries.append(end_date_calendar)
+            c_type = self.entries[0].get()
+            c_name = self.entries[1].get()
+            teacher_name = self.entries[2].get()
+            t_fn, t_ln = teacher_name.split(' ')
+            t_fn = t_fn.split('-')[1]
+            c_book = self.entries[3].get()
+            if c_type == "Ders":
+                add_course_q = ("INSERT INTO course (COURSE_NAME, TEXT_BOOK) "
+                                "VALUES ('{}', '{}')".format(c_name, c_book))
+                self.cont.sql_query(add_course_q)
+                course_id_q = ("SELECT c.ID FROM course c WHERE c.COURSE_NAME = '{}'".format(c_name))
+                course_id = self.cont.sql_query(course_id_q)[0][0]
+
+                teacher_id_q = ("SELECT t.ID FROM teacher t "
+                                "LEFT JOIN employee e ON e.ID = t.EMP_ID  "
+                                "WHERE e.FIRST_NAME = '{}' AND e.LAST_NAME = '{}'".format(t_fn, t_ln))
+                teacher_no = self.cont.sql_query(teacher_id_q)[0][0]
+                add_section_q = (
+                    "INSERT INTO course_section (COURSE_ID, SECTION_NAME, TEACHER_ID, START_DATE,END_DATE) "
+                    "VALUES ({}, '1', {}, '2023:01:01', '2024:01:01');".format(course_id, teacher_no))
+                self.cont.sql_query(add_section_q)
+                result = self.cont.commit()
+                section_id_q = (
+                    "SELECT sc.ID FROM course_section sc WHERE sc.COURSE_ID = '{}'".format(course_id))
+                section_id = self.cont.sql_query(section_id_q)[0][0]
+                for label in self.labels:
+                    if label.cget("bg") == "green":
+                        col, row = label.grid_info()['column'], label.grid_info()['row']
+                        day = WEEK_MAPPING[col - 1]
+                        hour = str(col + 7).zfill(2)
+                        add_hour_q = "INSERT INTO section_hours(SEC_ID, START_HOUR, DAY_OF_WEEK) VALUES ({}, '{}:30:00', '{}'  )".format(
+                            section_id, hour, day)
+                        self.cont.sql_query(add_hour_q)
+                        result = self.cont.commit()
+            self.open_management_view()
 
     def open_management_view(self):
         management_view = self.cont.get_frame(Views.SummaryView)
