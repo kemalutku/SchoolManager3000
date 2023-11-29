@@ -66,7 +66,7 @@ class SyllabusView(tk.Frame):
             label.config(text="")
 
         for name, hour, day in values:
-            if name is not None:
+            if day is not None:
                 day_value = WEEK_MAPPING[day]
                 try:
                     hour_value = int(str(hour)[:2]) - 8
@@ -99,7 +99,18 @@ class SyllabusView(tk.Frame):
                 'WHERE s.ID = "{}" )').format(
                 self.entry_data, self.entry_data)
         elif self.mode == Views.EMPLOYEE:
-            pass
+            QUERY= ("SELECT  "
+                    "c.COURSE_NAME, sh.START_HOUR ,sh.DAY_OF_WEEK "
+                    "FROM employee e LEFT JOIN teacher t ON t.EMP_ID = e.ID "
+                    "LEFT JOIN course_section cs ON cs.TEACHER_ID = t.ID "
+                    "LEFT JOIN section_hours sh ON sh.SEC_ID = cs.ID "
+                    "LEFT JOIN course c ON c.ID =cs.COURSE_ID "
+                    "WHERE e.ID = {} "
+                    "UNION "
+                    "SELECT ea.ACTIVITY_NAME , ea.START_HOUR  , ea.DAY_OF_WEEK "
+                    "FROM employee e "
+                    "LEFT JOIN employee_activities ea ON e.ID =ea.EMP_ID "
+                    "WHERE e.ID ={};").format(self.entry_data, self.entry_data)
         elif self.mode == Views.ACTIVITY:
             QUERY = ("SELECT c.course_name, sh.start_hour, sh.day_of_week "
                      "FROM course c "

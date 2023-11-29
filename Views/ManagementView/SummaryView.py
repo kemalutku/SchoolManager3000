@@ -86,6 +86,7 @@ class SummaryView(tk.Frame):
             self.tree_view.heading("aktif", text="Aktif Öğrenci")
 
             self.add_new_button.config(text="Öğrenci Ekle")
+            self.add_relation_button.pack(side="top", fill="x", pady=20, padx=10)
 
         elif mode == Views.EMPLOYEE:
             self.title.set("Çalışanlar")
@@ -107,6 +108,7 @@ class SummaryView(tk.Frame):
             self.tree_view.heading("meslek", text="Meslek", anchor=tk.W)
 
             self.add_new_button.config(text="Çalışan Ekle")
+            self.add_relation_button.pack_forget()
 
         elif mode == Views.ACTIVITY:
             self.title.set("Dersler")
@@ -124,6 +126,7 @@ class SummaryView(tk.Frame):
             self.tree_view.heading("type", text="Tür", anchor=tk.W)
 
             self.add_new_button.config(text="Ders Ekle")
+            self.add_relation_button.pack_forget()
 
         self.populate_tree_view()
 

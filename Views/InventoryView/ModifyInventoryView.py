@@ -14,6 +14,7 @@ class ModifyInventoryView(tk.Frame):
         self.quantity_variable = tk.StringVar()
         self.button_text_var = tk.StringVar()
         self.origin_value = 0
+        self.update_method = "change"
 
         title_frame = tk.Frame(self)
         back_button = tk.Button(title_frame, text="←", command=lambda: controller.show_frame(Views.InventoryView))
@@ -80,6 +81,25 @@ class ModifyInventoryView(tk.Frame):
         result = self.cont.commit()
         if result:
             self.cont.show_frame(Views.InventoryView)
+            if self.update_method == "buy":
+                current_value = self.quantity_variable.get()
+                price = self.price_label.get()
+
+                try:
+                    current_value = float(current_value)
+                except ValueError:
+                    print(current_value, self.origin_value)
+                    return False
+                try:
+                    price = float(price)
+                except ValueError:
+                    return False
+                buy_amount = current_value - self.origin_value
+                buy_total = buy_amount * price
+                buy_query = ("INSERT INTO expense (EXPENSE_NAME, AMOUNT, EXPENSE_DATE) "
+                             "VALUES ('{}' , {} , CURDATE());".format(self.name_label.cget("text"), buy_total))
+                self.cont.sql_query(buy_query)
+                self.cont.commit()
         else:
             print("update fail: ", update_query)
 
@@ -117,7 +137,9 @@ class ModifyInventoryView(tk.Frame):
 
         if current_value > self.origin_value:
             self.button_text_var.set("Satın Alım Yap")
+            self.update_method = "buy"
         elif current_value < self.origin_value:
             self.button_text_var.set("Envanterden eksilt")
+            self.update_method = "change"
         else:
             self.button_text_var.set("Envanteri Düzenle")

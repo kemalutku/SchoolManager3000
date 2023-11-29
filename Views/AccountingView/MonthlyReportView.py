@@ -55,22 +55,23 @@ class MonthlyReportView(tk.Frame):
     def show_weekly_report(self):
         self.report_label.config(text="")
         target_year = int(self.report_year_dropdown.get())
-        target_month = int(months.index(self.report_month_dropdown.get())+1)
+        target_month = int(months.index(self.report_month_dropdown.get()) + 1)
         date_str = self.date_string(target_year, target_month)
-        next_str = self.date_string(target_year, target_month+1 if target_month != 'Aralık' else 1)
+        next_str = self.date_string(target_year, target_month + 1 if target_month != 'Aralık' else 1)
 
-        query = ("SELECT "
-                 "e.EXPENSE_NAME ,"
-                 "e.AMOUNT, "
-                 "e.EXPENSE_DATE FROM expense e  "
-                 "WHERE "
-                 "e.EXPENSE_DATE >= '{}' AND e.EXPENSE_DATE <'{}' "
-                 "UNION  "
-                 "SELECT "
-                 "'TOPLAM HARCAMA', SUM(e.AMOUNT), NULL "
-                 "FROM expense e "
-                 "WHERE e.EXPENSE_DATE >= '{}' AND e.EXPENSE_DATE <'{}';").format(date_str, next_str, date_str,
-                                                                                  next_str, )
+        query = (
+            "SELECT "
+            "e.EXPENSE_NAME ,e.AMOUNT, e.EXPENSE_DATE "
+            "FROM expense e "
+            "WHERE e.EXPENSE_DATE >= '{}' AND e.EXPENSE_DATE < '{}' "
+            "UNION  "
+            "SELECT 'Toplam MAAŞ' , SUM(ee.SALARY) , NULL "
+            "FROM employee ee "
+            "UNION "
+            "SELECT 'TOPLAM HARCAMA', SUM(e.AMOUNT), NULL  "
+            "FROM expense e  "
+            "WHERE e.EXPENSE_DATE >= '{}' AND e.EXPENSE_DATE < '{}';").format(date_str, next_str, date_str,
+                                                                             next_str, )
 
         results = self.cont.sql_query(query)
         report_text = "KALEM \t\t\t\t HARCAMA \t\t\t\t TARİH \t\t\t\t\n"

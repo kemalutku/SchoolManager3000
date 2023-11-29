@@ -6,6 +6,7 @@ import Views
 class AddRemoveRelationView(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
+        self.rm_activity_dropdown = None
         self.activity_day = None
         self.add_activity_dropdown = None
         self.add_course_dropdown = None
@@ -40,7 +41,7 @@ class AddRemoveRelationView(tk.Frame):
 
     def set_mode(self, mode):
         self.mode = mode
-        if mode == Views.STUDENT or mode == Views.EMPLOYEE:
+        if mode == Views.STUDENT:
 
             tk.Label(self.add_relation_frame, text="DERS EKLE").grid(row=0, column=0, sticky="we", padx=20, pady=20,
                                                                      columnspan=2)
@@ -131,6 +132,51 @@ class AddRemoveRelationView(tk.Frame):
                                             command=self.add_activity_action)
             add_activity_button.grid(row=13, column=0, columnspan=2, sticky="we")
 
+            # **********************************************************************
+
+            tk.Label(self.remove_relation_frame, text="AKTİVİTE SİL").grid(row=6, column=0, sticky="we", padx=20,
+                                                                           pady=20,
+                                                                           columnspan=2)
+            tk.Label(self.remove_relation_frame, text="Öğrenci Numarası").grid(row=7, column=0, sticky="w")
+            tk.Label(self.remove_relation_frame, text="Ad").grid(row=8, column=0, sticky="w")
+            tk.Label(self.remove_relation_frame, text="Soyad").grid(row=9, column=0, sticky="w")
+            tk.Label(self.remove_relation_frame, text="Aktivite").grid(row=10, column=0, sticky="w")
+
+            tk.Label(self.remove_relation_frame, text="").grid(row=7, column=1, sticky="w")
+            tk.Label(self.remove_relation_frame, text="").grid(row=8, column=1, sticky="w")
+            tk.Label(self.remove_relation_frame, text="").grid(row=9, column=1, sticky="w")
+            self.rm_activity_dropdown = ttk.Combobox(self.remove_relation_frame)
+            self.rm_activity_dropdown.grid(row=10, column=1, sticky="w")
+            rm_activity_names_query = "SELECT DISTINCT ACTIVITY_NAME FROM" \
+                                      " student_activities WHERE " \
+                                      "STUDENT_ID = {};".format(self.entry_data)
+            rm_activity_names = [row[0] for row in self.cont.sql_query(rm_activity_names_query)]
+            self.rm_activity_dropdown['values'] = rm_activity_names
+
+            rm_act_student_id_entry = tk.Entry(self.remove_relation_frame)
+            rm_act_student_id_entry.insert(0, str(self.entry_data))
+            rm_act_student_id_entry['state'] = 'disabled'
+            rm_act_student_id_entry.grid(row=7, column=1, sticky="w")
+
+            sname_query = "SELECT s.FIRST_NAME, s.LAST_NAME " \
+                          "FROM student s WHERE s.ID = {}".format(self.entry_data)
+            sname = self.cont.sql_query(sname_query)
+
+            rm_act_student_name_entry = tk.Entry(self.remove_relation_frame)
+            rm_act_student_name_entry.insert(0, str(sname[0][0]))
+            rm_act_student_name_entry['state'] = 'disabled'
+            rm_act_student_name_entry.grid(row=8, column=1, sticky="w")
+            rm_act_student_surname_entry = tk.Entry(self.remove_relation_frame)
+            rm_act_student_surname_entry.insert(0, str(sname[0][1]))
+            rm_act_student_surname_entry['state'] = 'disabled'
+            rm_act_student_surname_entry.grid(row=9, column=1, sticky="w")
+
+            remove_act_relation_button = tk.Button(self.remove_relation_frame, text="Aktivite Sil",
+                                                   command=self.rm_activity_action)
+            remove_act_relation_button.grid(row=11, column=0, columnspan=2, sticky="we")
+
+            # **********************************************************************
+
             #########################################################################
             tk.Label(self.remove_relation_frame, text="DERS SİL").grid(row=0, column=0, sticky="we", padx=20, pady=20,
                                                                        columnspan=2)
@@ -171,7 +217,180 @@ class AddRemoveRelationView(tk.Frame):
             remove_relation_button = tk.Button(self.remove_relation_frame, text="Ders Sil",
                                                command=self.rm_relation_action)
             remove_relation_button.grid(row=5, column=0, columnspan=2, sticky="we")
+        elif mode == Views.EMPLOYEE:
 
+            tk.Label(self.add_relation_frame, text="DERS EKLE").grid(row=0, column=0, sticky="we", padx=20, pady=20,
+                                                                     columnspan=2)
+            tk.Label(self.add_relation_frame, text="Çalışan Numarası").grid(row=1, column=0, sticky="w")
+            tk.Label(self.add_relation_frame, text="Ad").grid(row=2, column=0, sticky="w")
+            tk.Label(self.add_relation_frame, text="Soyad").grid(row=3, column=0, sticky="w")
+            tk.Label(self.add_relation_frame, text="Ders").grid(row=4, column=0, sticky="w")
+
+            tk.Label(self.add_relation_frame, text="").grid(row=1, column=1, sticky="w")
+            tk.Label(self.add_relation_frame, text="").grid(row=2, column=1, sticky="w")
+            tk.Label(self.add_relation_frame, text="").grid(row=3, column=1, sticky="w")
+
+            self.add_course_dropdown = ttk.Combobox(self.add_relation_frame)
+            self.add_course_dropdown.grid(row=4, column=1, sticky="w")
+            add_course_names_query = "SELECT c.COURSE_NAME FROM course c WHERE c.ID NOT IN (SELECT cs.COURSE_ID" \
+                                     " FROM student_section ss JOIN course_section cs ON ss.SECTION_ID = cs.ID" \
+                                     " WHERE ss.STUDENT_ID = {}) ORDER BY c.COURSE_NAME;".format(self.entry_data)
+            add_course_names = [row[0] for row in self.cont.sql_query(add_course_names_query)]
+            self.add_course_dropdown['values'] = add_course_names
+
+            employee_id = self.entry_data
+            empoyee_id_entry = tk.Entry(self.add_relation_frame)
+            empoyee_id_entry.insert(0, str(employee_id))
+            empoyee_id_entry['state'] = 'disabled'
+            empoyee_id_entry.grid(row=1, column=1, sticky="w")
+
+            ename_query = "SELECT e.FIRST_NAME, s.LAST_NAME " \
+                          "FROM employee e WHERE e.ID = {}".format(self.entry_data)
+            ename = self.cont.sql_query(ename_query)
+
+            add_employee_name_entry = tk.Entry(self.add_relation_frame)
+            add_employee_name_entry.insert(0, str(ename[0][0]))
+            add_employee_name_entry['state'] = 'disabled'
+            add_employee_name_entry.grid(row=2, column=1, sticky="w")
+            add_employee_surname_entry = tk.Entry(self.add_relation_frame)
+            add_employee_surname_entry.insert(0, str(ename[0][1]))
+            add_employee_surname_entry['state'] = 'disabled'
+            add_employee_surname_entry.grid(row=3, column=1, sticky="w")
+
+            add_relation_button = tk.Button(self.add_relation_frame, text="Ders Ekle",
+                                            command=self.add_relation_action)
+            add_relation_button.grid(row=5, column=0, columnspan=2, sticky="we")
+
+            #########################################################################
+
+            tk.Label(self.add_relation_frame, text="AKTİVİTE EKLE").grid(row=6, column=0, sticky="we", padx=20, pady=20,
+                                                                         columnspan=2)
+            tk.Label(self.add_relation_frame, text="Çalışan Numarası").grid(row=7, column=0, sticky="w")
+            tk.Label(self.add_relation_frame, text="Ad").grid(row=8, column=0, sticky="w")
+            tk.Label(self.add_relation_frame, text="Soyad").grid(row=9, column=0, sticky="w")
+            tk.Label(self.add_relation_frame, text="Aktivite").grid(row=10, column=0, sticky="w")
+            tk.Label(self.add_relation_frame, text="Gün").grid(row=11, column=0, sticky="w")
+            tk.Label(self.add_relation_frame, text="Saat(hh:mm:ss)").grid(row=12, column=0, sticky="w")
+
+            tk.Label(self.add_relation_frame, text="").grid(row=7, column=1, sticky="w")
+            tk.Label(self.add_relation_frame, text="").grid(row=8, column=1, sticky="w")
+            tk.Label(self.add_relation_frame, text="").grid(row=9, column=1, sticky="w")
+
+            a_student_id = self.entry_data
+            a_student_id_entry = tk.Entry(self.add_relation_frame)
+            a_student_id_entry.insert(0, str(a_student_id))
+            a_student_id_entry['state'] = 'disabled'
+            a_student_id_entry.grid(row=7, column=1, sticky="w")
+
+            a_add_employee_name_entry = tk.Entry(self.add_relation_frame)
+            a_add_employee_name_entry.insert(0, str(ename[0][0]))
+            a_add_employee_name_entry['state'] = 'disabled'
+            a_add_employee_name_entry.grid(row=8, column=1, sticky="w")
+            a_add_employee_surname_entry = tk.Entry(self.add_relation_frame)
+            a_add_employee_surname_entry.insert(0, str(ename[0][1]))
+            a_add_employee_surname_entry['state'] = 'disabled'
+            a_add_employee_surname_entry.grid(row=9, column=1, sticky="w")
+
+            activity_name = tk.Entry(self.add_relation_frame)
+            activity_name.grid(row=10, column=1, sticky="w")
+
+            days_of_week = ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"]
+            self.activity_day = ttk.Combobox(self.add_relation_frame, values=days_of_week)
+            self.activity_day.grid(row=11, column=1, sticky="w")
+            activity_time = tk.Entry(self.add_relation_frame)
+            activity_time.grid(row=12, column=1, sticky="w")
+            self.activity_entries.append(activity_time)
+            self.activity_entries.append(activity_name)
+
+            add_activity_button = tk.Button(self.add_relation_frame, text="Aktivite Ekle",
+                                            command=self.add_activity_action)
+            add_activity_button.grid(row=13, column=0, columnspan=2, sticky="we")
+
+            # **********************************************************************
+
+            tk.Label(self.remove_relation_frame, text="AKTİVİTE SİL").grid(row=6, column=0, sticky="we", padx=20,
+                                                                           pady=20,
+                                                                           columnspan=2)
+            tk.Label(self.remove_relation_frame, text="Çalışan Numarası").grid(row=7, column=0, sticky="w")
+            tk.Label(self.remove_relation_frame, text="Ad").grid(row=8, column=0, sticky="w")
+            tk.Label(self.remove_relation_frame, text="Soyad").grid(row=9, column=0, sticky="w")
+            tk.Label(self.remove_relation_frame, text="Aktivite").grid(row=10, column=0, sticky="w")
+
+            tk.Label(self.remove_relation_frame, text="").grid(row=7, column=1, sticky="w")
+            tk.Label(self.remove_relation_frame, text="").grid(row=8, column=1, sticky="w")
+            tk.Label(self.remove_relation_frame, text="").grid(row=9, column=1, sticky="w")
+            self.rm_activity_dropdown = ttk.Combobox(self.remove_relation_frame)
+            self.rm_activity_dropdown.grid(row=10, column=1, sticky="w")
+            rm_activity_names_query = "SELECT DISTINCT ACTIVITY_NAME FROM" \
+                                      " student_activities WHERE " \
+                                      "STUDENT_ID = {};".format(self.entry_data)
+            rm_activity_names = [row[0] for row in self.cont.sql_query(rm_activity_names_query)]
+            self.rm_activity_dropdown['values'] = rm_activity_names
+
+            rm_act_student_id_entry = tk.Entry(self.remove_relation_frame)
+            rm_act_student_id_entry.insert(0, str(self.entry_data))
+            rm_act_student_id_entry['state'] = 'disabled'
+            rm_act_student_id_entry.grid(row=7, column=1, sticky="w")
+
+            sname_query = "SELECT s.FIRST_NAME, s.LAST_NAME " \
+                          "FROM student s WHERE s.ID = {}".format(self.entry_data)
+            sname = self.cont.sql_query(sname_query)
+
+            rm_act_student_name_entry = tk.Entry(self.remove_relation_frame)
+            rm_act_student_name_entry.insert(0, str(sname[0][0]))
+            rm_act_student_name_entry['state'] = 'disabled'
+            rm_act_student_name_entry.grid(row=8, column=1, sticky="w")
+            rm_act_student_surname_entry = tk.Entry(self.remove_relation_frame)
+            rm_act_student_surname_entry.insert(0, str(sname[0][1]))
+            rm_act_student_surname_entry['state'] = 'disabled'
+            rm_act_student_surname_entry.grid(row=9, column=1, sticky="w")
+
+            remove_act_relation_button = tk.Button(self.remove_relation_frame, text="Aktivite Sil",
+                                                   command=self.rm_activity_action)
+            remove_act_relation_button.grid(row=11, column=0, columnspan=2, sticky="we")
+
+            # **********************************************************************
+
+            #########################################################################
+            tk.Label(self.remove_relation_frame, text="DERS SİL").grid(row=0, column=0, sticky="we", padx=20, pady=20,
+                                                                       columnspan=2)
+            tk.Label(self.remove_relation_frame, text="Öğrenci Numarası").grid(row=1, column=0, sticky="w")
+            tk.Label(self.remove_relation_frame, text="Ad").grid(row=2, column=0, sticky="w")
+            tk.Label(self.remove_relation_frame, text="Soyad").grid(row=3, column=0, sticky="w")
+            tk.Label(self.remove_relation_frame, text="Ders").grid(row=4, column=0, sticky="w")
+
+            tk.Label(self.remove_relation_frame, text="").grid(row=1, column=1, sticky="w")
+            tk.Label(self.remove_relation_frame, text="").grid(row=2, column=1, sticky="w")
+            tk.Label(self.remove_relation_frame, text="").grid(row=3, column=1, sticky="w")
+            self.rm_course_dropdown = ttk.Combobox(self.remove_relation_frame)
+            self.rm_course_dropdown.grid(row=4, column=1, sticky="w")
+            rm_course_names_query = "SELECT c.COURSE_NAME FROM course c JOIN course_section cs ON c.ID = cs.COURSE_ID" \
+                                    " JOIN student_section ss ON cs.ID = ss.SECTION_ID" \
+                                    " WHERE ss.STUDENT_ID = {};".format(self.entry_data)
+            rm_course_names = [row[0] for row in self.cont.sql_query(rm_course_names_query)]
+            self.rm_course_dropdown['values'] = rm_course_names
+
+            student_id_entry = tk.Entry(self.remove_relation_frame)
+            student_id_entry.insert(0, str(self.entry_data))
+            student_id_entry['state'] = 'disabled'
+            student_id_entry.grid(row=1, column=1, sticky="w")
+
+            sname_query = "SELECT s.FIRST_NAME, s.LAST_NAME " \
+                          "FROM student s WHERE s.ID = {}".format(self.entry_data)
+            sname = self.cont.sql_query(sname_query)
+
+            rm_student_name_entry = tk.Entry(self.remove_relation_frame)
+            rm_student_name_entry.insert(0, str(sname[0][0]))
+            rm_student_name_entry['state'] = 'disabled'
+            rm_student_name_entry.grid(row=2, column=1, sticky="w")
+            rm_student_surname_entry = tk.Entry(self.remove_relation_frame)
+            rm_student_surname_entry.insert(0, str(sname[0][1]))
+            rm_student_surname_entry['state'] = 'disabled'
+            rm_student_surname_entry.grid(row=3, column=1, sticky="w")
+
+            remove_relation_button = tk.Button(self.remove_relation_frame, text="Ders Sil",
+                                               command=self.rm_relation_action)
+            remove_relation_button.grid(row=5, column=0, columnspan=2, sticky="we")
         elif mode == Views.ACTIVITY:
             pass
 
@@ -258,7 +477,7 @@ class AddRemoveRelationView(tk.Frame):
         tk.Label(popup, text="Başarılı!",
                  wraplength=200).pack(pady=20, side="top")
 
-    def cakisma_popup(self):
+    def overlap_popup(self):
         popup = tk.Toplevel(self)
         popup.title("Çakışma Var!")
         popup_width = 300
@@ -317,4 +536,16 @@ class AddRemoveRelationView(tk.Frame):
             else:
                 self.add_course_commit_fail_popup()
         else:
-            self.cakisma_popup()
+            self.overlap_popup()
+
+    def rm_activity_action(self):
+        student_id = self.entry_data
+        activity_name = self.rm_activity_dropdown.get()
+        act_remove_query = "DELETE FROM student_activities " \
+                           "WHERE ACTIVITY_NAME = '{}' AND STUDENT_ID = {};".format(activity_name, student_id)
+        self.cont.sql_query(act_remove_query)
+        commit_result = self.cont.commit()
+        if commit_result is None:
+            self.add_course_commit_success_popup()
+        else:
+            self.add_course_commit_fail_popup()
