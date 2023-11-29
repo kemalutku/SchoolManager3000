@@ -4,6 +4,16 @@ import Views
 from tkcalendar import Calendar
 from datetime import datetime
 
+WEEK_MAPPING = {
+    0: "MONDAY",
+    1: "TUESDAY",
+    2: "WEDNESDAY",
+    3: "THURSDAY",
+    4: "FRIDAY",
+    5: "SATURDAY",
+    6: "SUNDAY"
+}
+
 
 class AddEntityView(tk.Frame):
     def __init__(self, parent, controller):
@@ -12,7 +22,10 @@ class AddEntityView(tk.Frame):
         self.title = tk.StringVar(value="")
         self.cont = controller
         self.preload_func = None
+        self.entry_data = None
         self.guardian_variable = tk.BooleanVar(value=True)
+        self.labels = []
+        self.clicked_labels = []
 
         title_frame = tk.Frame(self)
         back_button = tk.Button(title_frame, text="←", command=lambda: self.open_management_view())
@@ -23,6 +36,8 @@ class AddEntityView(tk.Frame):
 
         self.entity_details_frame = tk.Frame(self)
         self.entity_details_frame.pack(side="top", fill="both", expand=True, padx=20, pady=30)
+        self.course_frame = tk.Frame(self)
+        self.syllabus_frame = tk.Frame(self.entity_details_frame)
 
         self.entries = []
 
@@ -157,7 +172,86 @@ class AddEntityView(tk.Frame):
                 self.entity_details_frame.rowconfigure(i, weight=1)
 
         elif mode == Views.ACTIVITY:
-            pass
+            self.title.set("Ders / Aktivite Ekle")
+
+            tk.Label(self.entity_details_frame, text="Tür").grid(row=0, column=0, sticky="w")
+            tk.Label(self.entity_details_frame, text="Ad").grid(row=1, column=0, sticky="w")
+            tk.Label(self.entity_details_frame, text="Öğretmen").grid(row=2, column=0, sticky="w")
+            tk.Label(self.entity_details_frame, text="Ders Kitabı").grid(row=3, column=0, sticky="w")
+            tk.Label(self.entity_details_frame, text="Başlangıç Tarihi").grid(row=4, column=0, sticky="w")
+            tk.Label(self.entity_details_frame, text="Bitiş Tarihi").grid(row=5, column=0, sticky="w")
+
+            teacher_list = []
+            teacher_query = "SELECT CONCAT(e.ID, '-', e.FIRST_NAME ,' ' ,e.LAST_NAME) " \
+                            "FROM teacher t LEFT JOIN employee e ON t.EMP_ID =e.ID;"
+            teacher_list = self.cont.sql_query(teacher_query)
+            entity_type_selector = ttk.Combobox(self.entity_details_frame, values=['Ders', 'Aktivite'],
+                                                state='readonly')
+            name_entry = tk.Entry(self.entity_details_frame)
+            teacher_selector = ttk.Combobox(self.entity_details_frame, values=[teacher[0] for teacher in teacher_list],
+                                            state='readonly')
+            book_entry = tk.Entry(self.entity_details_frame)
+            start_date_calendar = Calendar(self.entity_details_frame)
+            end_date_calendar = Calendar(self.entity_details_frame)
+            add_activity_button = tk.Button(self.entity_details_frame, text="Ders / Aktivite Ekle")
+
+            self.entries.append(entity_type_selector)
+            self.entries.append(name_entry)
+            self.entries.append(teacher_selector)
+            self.entries.append(book_entry)
+            self.entries.append(start_date_calendar)
+            self.entries.append(end_date_calendar)
+
+            entity_type_selector.grid(row=0, column=1, sticky="we")
+            name_entry.grid(row=1, column=1, sticky="we")
+            teacher_selector.grid(row=2, column=1, sticky="we")
+            book_entry.grid(row=3, column=1, sticky="we")
+            start_date_calendar.grid(row=4, column=1, sticky="w")
+            end_date_calendar.grid(row=5, column=1, sticky="w")
+            add_activity_button.grid(row=6, column=0, columnspan=2, sticky="sew")
+
+            self.syllabus_frame.grid(row=0, column=2, sticky="nsew", rowspan=7, pady=10, padx=10)
+            self.entity_details_frame.columnconfigure(2, weight=1)
+            self.labels = []
+            self.clicked_labels = []
+
+            def on_label_click(event):
+                clicked_label = event.widget
+                grid_info = clicked_label.grid_info()
+                hour = grid_info["row"] + 7
+                day = WEEK_MAPPING[grid_info["column"] - 1]
+                marking_color = 'green'
+                color = clicked_label.cget("bg")
+                if color != marking_color:
+                    clicked_label.config(bg=marking_color)
+                    self.clicked_labels.append([hour, day])
+                else:
+                    try:
+                        clicked_label.config(bg='systemWindowBackgroundColor')
+                    except tk.TclError:
+                        clicked_label.config(bg='SystemButtonFace')
+                    self.clicked_labels.remove([hour, day])
+                # Print or use the row and column information
+
+            self.syllabus_frame.columnconfigure(0, weight=1)
+            for i, d in enumerate(["Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar"]):
+                self.syllabus_frame.columnconfigure(i + 1, weight=1)
+                label = tk.Label(self.syllabus_frame, text=d, relief="groove", borderwidth=1, bg="lightgray")
+                label.grid(row=0, column=i + 1, sticky="nsew")
+
+            self.syllabus_frame.rowconfigure(0, weight=1)
+            for i in range(12):
+                self.syllabus_frame.rowconfigure(i + 1, weight=1)
+                label = tk.Label(self.syllabus_frame, text="{}:30 -\n{}:20".format(i + 8, i + 9),
+                                 relief="groove", borderwidth=1, bg="lightgray")
+                label.grid(row=i + 1, column=0, sticky="nsew")
+
+            for i in range(7):
+                for j in range(12):
+                    label = tk.Label(self.syllabus_frame, text="", relief="groove", borderwidth=1)
+                    label.grid(row=j + 1, column=i + 1, sticky="nsew")
+                    label.bind("<Button-1>", on_label_click)
+                    self.labels.append(label)
 
     def add_entity_action(self):
         if self.mode == Views.STUDENT:
@@ -190,8 +284,7 @@ class AddEntityView(tk.Frame):
                 self.open_management_view()
             else:
                 self.commit_fail_popup()
-
-        if self.mode == Views.EMPLOYEE:
+        elif self.mode == Views.EMPLOYEE:
             employee_id = self.entries[0].cget('text')
             employee_name = self.entries[1].get()
             employee_surname = self.entries[2].get()
@@ -222,6 +315,8 @@ class AddEntityView(tk.Frame):
                 insert_teacher_query = "INSERT INTO teacher (ID, EMP_ID)" \
                                        " VALUES('{}', '{}')".format(teacher_id, employee_id)
                 self.cont.sql_query(insert_teacher_query)
+        elif self.mode == Views.ACTIVITY:
+            pass
 
     def open_management_view(self):
         management_view = self.cont.get_frame(Views.SummaryView)

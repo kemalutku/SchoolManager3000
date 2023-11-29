@@ -7,3 +7,6 @@ class FakeDB:
 
     def rollback(self):
         pass
+
+    def next_result(self):
+        pass
