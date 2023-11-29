@@ -66,9 +66,11 @@ class SchoolManager3000(tk.Tk):
     def commit(self):
         try:
             self.school_db.commit()
+            return True
         except mysql.connector.Error as err:
             print(f"Error: {err}")
             self.school_db.rollback()
+            return False
         finally:
             # Make sure to fetch any remaining results
             while self.school_db.next_result():

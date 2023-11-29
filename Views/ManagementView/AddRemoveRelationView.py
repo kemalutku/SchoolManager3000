@@ -171,7 +171,6 @@ class AddRemoveRelationView(tk.Frame):
             remove_relation_button = tk.Button(self.remove_relation_frame, text="Ders Sil",
                                                command=self.rm_relation_action)
             remove_relation_button.grid(row=5, column=0, columnspan=2, sticky="we")
-
         elif mode == Views.ACTIVITY:
             pass
 
@@ -258,7 +257,7 @@ class AddRemoveRelationView(tk.Frame):
         tk.Label(popup, text="Başarılı!",
                  wraplength=200).pack(pady=20, side="top")
 
-    def cakisma_popup(self):
+    def overlap_popup(self):
         popup = tk.Toplevel(self)
         popup.title("Çakışma Var!")
         popup_width = 300
@@ -317,4 +316,4 @@ class AddRemoveRelationView(tk.Frame):
             else:
                 self.add_course_commit_fail_popup()
         else:
-            self.cakisma_popup()
+            self.overlap_popup()
