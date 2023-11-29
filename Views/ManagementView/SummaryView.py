@@ -79,7 +79,7 @@ class SummaryView(tk.Frame):
 
             self.tree_view.heading("okul_num", text="Okul Numarası")
             self.tree_view.heading("ad", text="Ad", command=lambda : self.sort_treeview("ad",False))
-            self.tree_view.heading("soyad", text="Soyad")
+            self.tree_view.heading("soyad", text="Soyad", command=lambda : self.sort_treeview("soyad",False))
             self.tree_view.heading("yas", text="Yaş")
             self.tree_view.heading("veli_ad", text="Veli Adı")
             self.tree_view.heading("veli_soyad", text="Veli Soyadı")
@@ -100,8 +100,8 @@ class SummaryView(tk.Frame):
             self.tree_view.column("meslek", width=150)
 
             self.tree_view.heading("okul_num", text="Çalışan Numarası", anchor=tk.W)
-            self.tree_view.heading("ad", text="Ad", anchor=tk.W)
-            self.tree_view.heading("soyad", text="Soyad", anchor=tk.W)
+            self.tree_view.heading("ad", text="Ad", anchor=tk.W, command=lambda : self.sort_treeview("ad",False))
+            self.tree_view.heading("soyad", text="Soyad", anchor=tk.W, command=lambda : self.sort_treeview("soyad",False))
             self.tree_view.heading("yas", text="Yaş", anchor=tk.W)
             self.tree_view.heading("maas", text="Maaş", anchor=tk.W)
             self.tree_view.heading("meslek", text="Meslek", anchor=tk.W)
